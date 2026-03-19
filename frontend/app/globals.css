@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-light dark:bg-dark text-gray-900 dark:text-gray-100 font-inter transition-colors duration-300;
+  }
+  * {
+    @apply scroll-smooth;
+  }
+}
+
+@layer utilities {
+  .animated-gradient {
+    background-size: 200% 200%;
+    animation: gradient-pan 5s ease infinite;
+  }
+
+  .glass-card {
+    @apply bg-white/70 dark:bg-white/10 backdrop-blur border border-gray-200 dark:border-gray-700;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar        { width: 6px; }
+  ::-webkit-scrollbar-track  { background: transparent; }
+  ::-webkit-scrollbar-thumb  { @apply bg-gray-300 dark:bg-gray-700 rounded-full; }
+}

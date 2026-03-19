@@ -1,0 +1,28 @@
+# Next.js
+.next/
+out/
+build/
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.production
+.env.example
+
+# Uploads (add your own images)
+public/uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
