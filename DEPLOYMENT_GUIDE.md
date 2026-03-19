@@ -134,7 +134,7 @@ Expected output:
 git init
 git add .
 git commit -m "Initial full-stack portfolio"
-git remote add origin https://github.com/MaDycloud-MD/madycloud-portfolio.git
+git remote add origin https://github.com/MaDycloud-MD/madycloudportfolio.git
 git push -u origin main
 ```
 

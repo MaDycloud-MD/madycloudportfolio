@@ -4,7 +4,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import { auth } from '@/lib/firebase';
 
 export function useAuth() {
-  const [user, setUser]       = useState(null);
+  const [user,    setUser]    = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,16 +15,13 @@ export function useAuth() {
     return unsub;
   }, []);
 
-  const login  = (email, password) => signInWithEmailAndPassword(auth, email, password);
-  const logout = () => signOut(auth);
+  const login    = (email, password) => signInWithEmailAndPassword(auth, email, password);
+  const logout   = () => signOut(auth);
+  const getToken = async () => user ? user.getIdToken() : null;
 
-  // Returns the current Firebase ID token (refreshed automatically)
-  const getToken = async () => {
-    if (!user) return null;
-    return user.getIdToken();
-  };
-
-  const isAdmin = !loading && !!user && user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  const adminEmailsRaw = process.env.NEXT_PUBLIC_ADMIN_EMAILS || '';
+  const adminEmails    = adminEmailsRaw.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+  const isAdmin        = !loading && !!user && adminEmails.includes(user.email?.toLowerCase() ?? '');
 
   return { user, loading, isAdmin, login, logout, getToken };
 }

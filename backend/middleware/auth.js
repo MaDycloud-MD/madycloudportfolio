@@ -1,9 +1,13 @@
 const admin = require('../lib/firebase-admin');
 
-/**
- * Middleware: verifies Firebase ID token and checks admin email.
- * Attach to any route that requires admin access.
- */
+function getAdminEmails() {
+  const raw = process.env.ADMIN_EMAILS || '';
+  return raw
+    .split(',')
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 async function requireAdmin(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
@@ -11,12 +15,19 @@ async function requireAdmin(req, res, next) {
       return res.status(401).json({ success: false, error: 'No token provided' });
     }
 
-    const token = authHeader.split('Bearer ')[1];
+    const token   = authHeader.split('Bearer ')[1];
     const decoded = await admin.auth().verifyIdToken(token);
 
-    // Only the designated admin email is allowed
-    if (decoded.email !== process.env.ADMIN_EMAIL) {
-      return res.status(403).json({ success: false, error: 'Forbidden: not an admin account' });
+    const adminEmails = getAdminEmails();
+    if (adminEmails.length === 0) {
+      return res.status(500).json({ success: false, error: 'ADMIN_EMAILS not configured on server' });
+    }
+
+    if (!adminEmails.includes(decoded.email?.toLowerCase())) {
+      return res.status(403).json({
+        success: false,
+        error: `${decoded.email} is not an authorized admin`,
+      });
     }
 
     req.adminUser = decoded;
