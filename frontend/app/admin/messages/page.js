@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { apiAuth } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMail, FiMailOpen, FiTrash2, FiRefreshCw } from 'react-icons/fi';
+import { FiMail, FiTrash2, FiRefreshCw } from 'react-icons/fi';
 
 export default function AdminMessages() {
   const [messages, setMessages] = useState([]);
@@ -98,7 +98,7 @@ export default function AdminMessages() {
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex items-center gap-2 min-w-0">
                       {msg.read
-                        ? <FiMailOpen size={14} className="text-gray-500 flex-shrink-0" />
+                        ? <FiMail size={14} className="text-gray-400 flex-shrink-0 opacity-40" />
                         : <FiMail     size={14} className="text-primary flex-shrink-0" />
                       }
                       <span className={`text-sm truncate ${msg.read ? 'text-gray-400' : 'text-white font-medium'}`}>
