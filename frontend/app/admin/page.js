@@ -6,7 +6,7 @@ import { auth } from '@/lib/firebase';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { FiUser,
+import {
   FiCode, FiBriefcase, FiGrid, FiBook,
   FiAward, FiHeart, FiMail, FiFileText,
   FiLogOut, FiHome, FiUser,
