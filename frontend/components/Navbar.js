@@ -1,3 +1,4 @@
+// frontend/components/Navbar.js
 'use client';
 import { useEffect, useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
@@ -12,6 +13,7 @@ const navLinks = [
   { name: 'Certifications', id: 'certifications' },
   { name: 'Contact',        id: 'contact' },
 ];
+
 
 export default function Navbar() {
   const [visible,     setVisible]     = useState(true);
@@ -71,6 +73,12 @@ export default function Navbar() {
         ))}
         <li>
           <ResumeButton />
+        </li>
+        <li>
+          <a href="/admin"
+            className="text-xs text-gray-500 hover:text-primary border border-gray-300 dark:border-gray-600 px-2 py-1 rounded hover:border-primary transition">
+            Admin
+          </a>
         </li>
         <li><SwipeThemeToggle /></li>
       </ul>

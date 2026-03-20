@@ -1,19 +1,23 @@
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 const cloudinary = require('../lib/cloudinary');
 const { requireAdmin } = require('../middleware/auth');
 
 /**
  * POST /api/upload/sign
- * Returns a signed upload signature so the frontend can upload
- * directly to Cloudinary without proxying through our server.
- * Body: { folder?: string, resourceType?: string }
+ * Returns signed Cloudinary upload credentials.
+ * SVGs are uploaded as resource_type: 'raw' — Cloudinary doesn't process them as images.
+ * Body: { folder?: string, filename?: string }
  */
 router.post('/sign', requireAdmin, (req, res) => {
   try {
-    const { folder = 'portfolio', resourceType = 'image' } = req.body;
+    const { folder = 'portfolio', filename = '' } = req.body;
 
-    const timestamp = Math.round(Date.now() / 1000);
+    // Detect SVG by filename extension — must use raw resource_type
+    const isSvg        = filename.toLowerCase().endsWith('.svg');
+    const resourceType = isSvg ? 'raw' : 'image';
+
+    const timestamp    = Math.round(Date.now() / 1000);
     const paramsToSign = { timestamp, folder };
 
     const signature = cloudinary.utils.api_sign_request(
@@ -22,13 +26,13 @@ router.post('/sign', requireAdmin, (req, res) => {
     );
 
     res.json({
-      success:   true,
+      success: true,
       signature,
       timestamp,
-      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-      apiKey:    process.env.CLOUDINARY_API_KEY,
+      cloudName:    process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey:       process.env.CLOUDINARY_API_KEY,
       folder,
-      resourceType,
+      resourceType, // 'raw' for SVG, 'image' for everything else
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

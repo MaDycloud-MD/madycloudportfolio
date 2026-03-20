@@ -51,10 +51,11 @@ app.use('/api/volunteering',   require('./routes/volunteering'));
 app.use('/api/contact',        contactLimiter, require('./routes/contact'));
 app.use('/api/resume',         require('./routes/resume'));
 app.use('/api/upload',         require('./routes/upload'));
+app.use('/api/profile',        require('./routes/profile'));
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'MaDycloud API is running', timestamp: new Date() });
+  res.json({ success: true, message: 'MaDycloud API is running 🚀', timestamp: new Date() });
 });
 
 // ── 404 handler ───────────────────────────────────────────────────────────────
@@ -81,6 +82,6 @@ connectDB().then(() => {
     console.log(`CORS allowed for: ${process.env.FRONTEND_URL}`);
   });
 }).catch(err => {
-  console.error('Failed to connect to MongoDB:', err);
+  console.error('WARNING: Failed to connect to MongoDB:', err);
   process.exit(1);
 });
