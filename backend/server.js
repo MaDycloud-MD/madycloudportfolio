@@ -1,3 +1,4 @@
+// backend/server.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -16,10 +17,21 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS — only allow your frontend
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL,
-    'http://localhost:3000',
-  ],
+  origin: function(origin, callback) {
+    const allowed = [
+      process.env.FRONTEND_URL,
+      'http://localhost:3000',
+      'http://localhost:3001',
+    ];
+    // Also allow www. variant automatically
+    if (!origin) return callback(null, true);
+    const withWww    = allowed.map(u => u?.replace('https://', 'https://www.'));
+    const withoutWww = allowed.map(u => u?.replace('https://www.', 'https://'));
+    const allAllowed = [...new Set([...allowed, ...withWww, ...withoutWww])].filter(Boolean);
+    if (allAllowed.includes(origin)) return callback(null, true);
+    console.warn('CORS blocked:', origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -77,11 +89,11 @@ const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`MongoDB connected`);
-    console.log(`CORS allowed for: ${process.env.FRONTEND_URL}`);
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`📦 MongoDB connected`);
+    console.log(`🌍 CORS allowed for: ${process.env.FRONTEND_URL}`);
   });
 }).catch(err => {
-  console.error('WARNING: Failed to connect to MongoDB:', err);
+  console.error('❌ Failed to connect to MongoDB:', err);
   process.exit(1);
 });

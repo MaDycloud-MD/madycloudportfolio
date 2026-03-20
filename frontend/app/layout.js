@@ -12,7 +12,7 @@ export const metadata = {
     url:         'https://madycloud.me',
     siteName:    'MaDycloud',
     images: [{
-      url:    '/og-image.png',
+      url:    '/madycloud1.png',
       width:  1200,
       height: 630,
       alt:    'MaDycloud Portfolio',
@@ -25,7 +25,7 @@ export const metadata = {
     images: ['/og-image.png'],
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: '/madycloud1.png',
   },
 };
 
