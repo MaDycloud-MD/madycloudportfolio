@@ -1,3 +1,4 @@
+// frontend/app/admin/page.js
 'use client';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -8,7 +9,7 @@ import dynamic from 'next/dynamic';
 import {
   FiCode, FiBriefcase, FiGrid, FiBook,
   FiAward, FiHeart, FiMail, FiFileText,
-  FiLogOut, FiHome,
+  FiLogOut, FiHome, FiUser,
 } from 'react-icons/fi';
 
 // ── Lazy-load each panel ──────────────────────────────────────────────────
@@ -20,6 +21,7 @@ const CertificationsPage = dynamic(() => import('@/app/admin/certifications/page
 const VolunteeringPage   = dynamic(() => import('@/app/admin/volunteering/page'),   { loading: () => <PanelLoader /> });
 const MessagesPage       = dynamic(() => import('@/app/admin/messages/page'),       { loading: () => <PanelLoader /> });
 const ResumePage         = dynamic(() => import('@/app/admin/resume/page'),         { loading: () => <PanelLoader /> });
+const ProfilePage        = dynamic(() => import('@/app/admin/profile/page'),        { loading: () => <PanelLoader /> });
 
 function PanelLoader() {
   return (
@@ -133,6 +135,7 @@ function DashboardOverview({ user, setActive }) {
     { label: 'Volunteering',   key: 'volunteering',   icon: FiHeart,     color: 'from-teal-500 to-cyan-500' },
     { label: 'Messages',       key: 'messages',       icon: FiMail,      color: 'from-indigo-500 to-blue-500' },
     { label: 'Resume',         key: 'resume',         icon: FiFileText,  color: 'from-amber-500 to-yellow-500' },
+    { label: 'Profile',        key: 'profile',        icon: FiUser,      color: 'from-gray-500 to-slate-500' },
   ];
 
   return (
@@ -185,6 +188,7 @@ const NAV = [
   { id: 'volunteering',   label: 'Volunteering',   icon: FiHeart },
   { id: 'messages',       label: 'Messages',       icon: FiMail },
   { id: 'resume',         label: 'Resume',         icon: FiFileText },
+  { id: 'profile',        label: 'Profile',        icon: FiUser },
 ];
 
 function SidebarNav({ active, setActive, onLogout, userEmail }) {
@@ -283,6 +287,7 @@ export default function AdminPage() {
     volunteering:   <VolunteeringPage />,
     messages:       <MessagesPage />,
     resume:         <ResumePage />,
+    profile:        <ProfilePage />,
   };
 
   return (
