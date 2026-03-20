@@ -37,6 +37,7 @@ export default function AdminProfile() {
   const [profile,   setProfile]   = useState(null);
   const [loading,   setLoading]   = useState(true);
   const [saving,    setSaving]    = useState(false);
+  const [saved,     setSaved]     = useState(false);
   const [msg,       setMsg]       = useState({ type: '', text: '' });
   const [taglines,  setTaglines]  = useState([]);
   const [newTag,    setNewTag]    = useState('');
@@ -71,6 +72,8 @@ export default function AdminProfile() {
         body:   JSON.stringify({ name: data.name, bio: data.bio, location: data.location, taglines, links }),
       });
       setMsg({ type: 'success', text: 'Profile updated successfully!' });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
     } catch (err) {
       setMsg({ type: 'error', text: `${err.message}` });
     } finally {
@@ -219,9 +222,11 @@ export default function AdminProfile() {
         </div>
 
         <button type="submit" disabled={saving}
-          className="w-full py-3 rounded-lg bg-yellow-400 text-black font-bold
-            hover:bg-yellow-300 transition disabled:opacity-60">
-          {saving ? 'Saving…' : 'Save Profile'}
+          className={`w-full py-3 rounded-lg font-bold transition disabled:opacity-60
+            ${saved
+              ? 'bg-green-400 text-black hover:bg-green-300'
+              : 'bg-yellow-400 text-black hover:bg-yellow-300'}`}>
+          {saving ? 'Saving…' : saved ? '✓ Saved!' : 'Save Profile'}
         </button>
       </form>
     </div>
