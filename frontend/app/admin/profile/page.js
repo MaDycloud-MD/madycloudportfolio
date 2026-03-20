@@ -70,9 +70,9 @@ export default function AdminProfile() {
         method: 'PUT',
         body:   JSON.stringify({ name: data.name, bio: data.bio, location: data.location, taglines, links }),
       });
-      setMsg({ type: 'success', text: '✅ Profile updated successfully!' });
+      setMsg({ type: 'success', text: 'Profile updated successfully!' });
     } catch (err) {
-      setMsg({ type: 'error', text: `❌ ${err.message}` });
+      setMsg({ type: 'error', text: `${err.message}` });
     } finally {
       setSaving(false);
     }
@@ -85,9 +85,9 @@ export default function AdminProfile() {
         body:   JSON.stringify({ photoUrl: url, photoPublicId: publicId }),
       });
       setProfile(d.data);
-      setMsg({ type: 'success', text: '✅ Photo updated!' });
+      setMsg({ type: 'success', text: 'Photo updated!' });
     } catch (err) {
-      setMsg({ type: 'error', text: `❌ ${err.message}` });
+      setMsg({ type: 'error', text: `${err.message}` });
     }
   };
 
@@ -96,9 +96,9 @@ export default function AdminProfile() {
     try {
       await apiAuthReq('/api/profile/photo', { method: 'DELETE' });
       setProfile(p => ({ ...p, photoUrl: '', photoPublicId: '' }));
-      setMsg({ type: 'success', text: '✅ Photo removed.' });
+      setMsg({ type: 'success', text: 'Photo removed.' });
     } catch (err) {
-      setMsg({ type: 'error', text: `❌ ${err.message}` });
+      setMsg({ type: 'error', text: `${err.message}` });
     }
   };
 
