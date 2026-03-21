@@ -1,3 +1,4 @@
+// backend/routes/profile.js
 const express  = require('express');
 const router   = express.Router();
 const Profile  = require('../models/Profile');
@@ -24,11 +25,12 @@ router.put('/', requireAdmin, async (req, res) => {
     let profile = await Profile.findOne({});
     if (!profile) profile = new Profile({});
 
-    const { name, taglines, bio, location, links } = req.body;
+    const { name, taglines, bio, techStack, location, links } = req.body;
     if (name      !== undefined) profile.name      = name;
     if (taglines  !== undefined) profile.taglines  = taglines;
     if (bio       !== undefined) profile.bio       = bio;
     if (location  !== undefined) profile.location  = location;
+    if (techStack !== undefined) profile.techStack = techStack;
     if (links     !== undefined) profile.links     = { ...profile.links.toObject(), ...links };
 
     await profile.save();

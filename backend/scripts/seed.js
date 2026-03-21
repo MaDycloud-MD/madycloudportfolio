@@ -338,25 +338,25 @@ async function seed() {
     console.log('🗑️  Cleared existing data');
 
     // Insert fresh data
-    await Project.insertMany(projects);
-    console.log(`📦 Seeded ${projects.length} projects`);
+    // await Project.insertMany(projects);
+    // console.log(`📦 Seeded ${projects.length} projects`);
 
-    await Experience.insertMany(experience);
-    console.log(`💼 Seeded ${experience.length} experience entries`);
+    // await Experience.insertMany(experience);
+    // console.log(`💼 Seeded ${experience.length} experience entries`);
 
-    await Skill.insertMany(skills);
-    console.log(`🛠️  Seeded ${skills.length} skill groups`);
+    // await Skill.insertMany(skills);
+    // console.log(`🛠️  Seeded ${skills.length} skill groups`);
 
-    await Education.insertMany(education);
-    console.log(`🎓 Seeded ${education.length} education entries`);
+    // await Education.insertMany(education);
+    // console.log(`🎓 Seeded ${education.length} education entries`);
 
-    await Certification.insertMany(certifications);
-    console.log(`🏅 Seeded ${certifications.length} certifications`);
+    // await Certification.insertMany(certifications);
+    // console.log(`🏅 Seeded ${certifications.length} certifications`);
 
-    await Volunteering.insertMany(volunteering);
-    console.log(`🤝 Seeded ${volunteering.length} volunteering entries`);
+    // await Volunteering.insertMany(volunteering);
+    // console.log(`🤝 Seeded ${volunteering.length} volunteering entries`);
 
-    console.log('\n✨ Database seeded successfully!');
+    // console.log('\n✨ Database seeded successfully!');
   } catch (err) {
     console.error('❌ Seed failed:', err);
   } finally {

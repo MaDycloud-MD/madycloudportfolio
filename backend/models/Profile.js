@@ -5,6 +5,7 @@ const profileSchema = new mongoose.Schema({
   name:        { type: String, default: 'Mohammed Shoaib. Makandar' },
   taglines:    [{ type: String }],  // TypeAnimation sequence
   bio:         { type: String, default: '' },
+  techStack:   { type: String, default: '' },
   photoUrl:    { type: String, default: '' },
   photoPublicId: { type: String, default: '' },
   location:    { type: String, default: 'Belagavi, Karnataka, India.' },
