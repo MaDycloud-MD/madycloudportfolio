@@ -41,7 +41,7 @@ export default function Hero() {
 
   return (
     <section id="home"
-      className="relative overflow-hidden pt-32 sm:pt-36 md:pt-40 pb-16
+      className="relative overflow-visible pt-32 sm:pt-36 md:pt-40 pb-16
         flex flex-col md:flex-row items-center md:items-start justify-between gap-6 md:gap-8">
 
       {/* Text */}
@@ -61,8 +61,27 @@ export default function Hero() {
           <TypeAnimation sequence={sequence} wrapper="span" speed={50} repeat={Infinity} />
         </div>
 
-        <p className="mt-5 text-lg text-gray-600 dark:text-gray-300">
+        {/* <p className="font-Geist Sans mt-5 text-lg text-gray-600 dark:text-gray-300">
           {profile?.bio || "I'm a DevOps and Cloud Engineer focused on building cloud systems teams can rely on. I work with AWS, Kubernetes, Docker, Terraform, and CI/CD pipelines."}
+        </p> */}
+        <p className="mt-5 text-lg text-gray-600 dark:text-gray-300">
+          {profile?.bio ? (
+            <>
+              {profile.bio}{' '}
+              <span className="font-mono font-medium text-blue-600 dark:text-blue-400">
+                {profile.techStack}
+              </span>.
+            </>
+          ) : (
+          
+            <>
+              Architecting the infrastructure, building the frontend, and automating the deployment. 
+              I'm a DevOps & Full-Stack Engineer focused on delivering reliable end-to-end solutions using{' '}
+              <span className="font-mono font-medium text-blue-600 dark:text-blue-400">
+                AWS, Kubernetes, Terraform, React, and CI/CD pipelines
+              </span>.
+            </>
+          )}
         </p>
 
         {/* Social links */}
@@ -104,13 +123,13 @@ export default function Hero() {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
-        className="relative w-44 h-44 sm:w-52 sm:h-52 z-10 flex-shrink-0 md:mr-8"
+        className="relative w-44 h-44 sm:w-52 sm:h-52 z-10 flex-shrink-0 md:mr-8 "
       >
         <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary to-yellow-300 blur-xl opacity-30 animate-pulse" />
         <img
           src={photoSrc}
-          alt={profile?.name || 'Shoaib'}
-          className="relative z-10 w-full h-full rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-xl"
+          alt={profile?.name || 'MD'}
+          className="relative z-10 w-full h-full rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-xl "
         />
       </motion.div>
     </section>

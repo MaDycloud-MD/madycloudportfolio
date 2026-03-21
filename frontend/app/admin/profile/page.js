@@ -51,6 +51,7 @@ export default function AdminProfile() {
       reset({
         name:     d.data.name,
         bio:      d.data.bio,
+        techStack: d.data.techStack,
         location: d.data.location,
         ...Object.fromEntries(
           Object.entries(d.data.links || {}).map(([k, v]) => [`links.${k}`, v])
@@ -69,7 +70,7 @@ export default function AdminProfile() {
       });
       await apiAuthReq('/api/profile', {
         method: 'PUT',
-        body:   JSON.stringify({ name: data.name, bio: data.bio, location: data.location, taglines, links }),
+        body:   JSON.stringify({ name: data.name, bio: data.bio, techStack: data.techStack, location: data.location, taglines, links }),
       });
       setMsg({ type: 'success', text: 'Profile updated successfully!' });
       setSaved(true);
@@ -174,6 +175,13 @@ export default function AdminProfile() {
             <textarea {...register('bio')} rows={3}
               placeholder="I'm a DevOps and Cloud Engineer..."
               className={`${inputCls} resize-y`} />
+          </Field>
+          <Field label="Tech Stack">
+            <input 
+              {...register('techStack')} 
+              placeholder="AWS, React..." 
+              className={inputCls} 
+            />
           </Field>
 
           <Field label="Location">

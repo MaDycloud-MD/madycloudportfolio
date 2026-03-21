@@ -1,6 +1,6 @@
 // frontend/app/admin/page.js
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { motion } from 'framer-motion';
@@ -22,6 +22,8 @@ const VolunteeringPage   = dynamic(() => import('@/app/admin/volunteering/page')
 const MessagesPage       = dynamic(() => import('@/app/admin/messages/page'),       { loading: () => <PanelLoader /> });
 const ResumePage         = dynamic(() => import('@/app/admin/resume/page'),         { loading: () => <PanelLoader /> });
 const ProfilePage        = dynamic(() => import('@/app/admin/profile/page'),        { loading: () => <PanelLoader /> });
+
+const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
 function PanelLoader() {
   return (
@@ -171,6 +173,7 @@ function DashboardOverview({ user, setActive }) {
       <div className="mt-8 p-4 rounded-xl bg-white/3 border border-white/5">
         <p className="text-xs text-gray-600">
           Portfolio updates within 60 seconds of any change. Images upload directly to Cloudinary.
+          Session expires after 30 minutes of inactivity.
         </p>
       </div>
     </div>
@@ -202,7 +205,7 @@ function SidebarNav({ active, setActive, onLogout, userEmail }) {
         <p className="text-gray-600 text-xs mt-1 truncate">{userEmail}</p>
       </div>
 
-      <nav className="flex-1 px-3 py-5 space-y-0.5">
+      <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
         {NAV.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setActive(id)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
@@ -238,21 +241,56 @@ export default function AdminPage() {
   const [loginErr,    setLoginErr]    = useState('');
   const [signingIn,   setSigningIn]   = useState(false);
   const [active,      setActive]      = useState('dashboard');
+  const idleTimer                     = useRef(null);
 
+  // ── Session management ────────────────────────────────────────────────
   useEffect(() => {
+    // Firebase auth state listener
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setAuthLoading(false);
     });
-    return unsub;
+
+    // Sign out when tab/browser is closed — forces fresh login next visit
+    const handleUnload = () => signOut(auth);
+    window.addEventListener('beforeunload', handleUnload);
+
+    return () => {
+      unsub();
+      window.removeEventListener('beforeunload', handleUnload);
+    };
   }, []);
+
+  // ── Idle timeout — reset on any user activity ─────────────────────────
+  useEffect(() => {
+    if (!user) return; // Only run when logged in
+
+    const resetIdle = () => {
+      clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(async () => {
+        await signOut(auth);
+        setUser(null);
+        setActive('dashboard');
+        alert('Session expired due to inactivity. Please log in again.');
+      }, IDLE_TIMEOUT);
+    };
+
+    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+    events.forEach(e => window.addEventListener(e, resetIdle));
+    resetIdle(); // Start the timer immediately on login
+
+    return () => {
+      clearTimeout(idleTimer.current);
+      events.forEach(e => window.removeEventListener(e, resetIdle));
+    };
+  }, [user]);
 
   const handleLogin = async (email, password) => {
     setSigningIn(true);
     setLoginErr('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged fires automatically → sets user → renders dashboard
+      // onAuthStateChanged fires → sets user → renders dashboard
     } catch (err) {
       const msgs = {
         'auth/invalid-credential':     'Wrong email or password.',
@@ -269,6 +307,7 @@ export default function AdminPage() {
   };
 
   const handleLogout = async () => {
+    clearTimeout(idleTimer.current);
     await signOut(auth);
     setUser(null);
     setActive('dashboard');
