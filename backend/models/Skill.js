@@ -8,8 +8,7 @@ const skillItemSchema = new mongoose.Schema({
 
 const skillSchema = new mongoose.Schema({
   category: {
-    type: String, required: true,
-    enum: ['Programming', 'DevOps', 'Databases', 'Operating Systems', 'Tools'],
+    type: String, required: true, trim: true,
   },
   title:  { type: String, required: true, trim: true },
   items:  [skillItemSchema],
