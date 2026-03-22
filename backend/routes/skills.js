@@ -10,8 +10,7 @@ const { getAll, getOne, create, update, remove } = createCRUD(Skill);
 const validation = [
   body('category')
     .trim().notEmpty()
-    .isIn(['Programming', 'DevOps', 'Databases', 'Operating Systems', 'Tools'])
-    .withMessage('Invalid category'),
+    .withMessage('Category is required'),  // any string allowed
   body('title').trim().notEmpty().withMessage('Title is required'),
   body('items').isArray({ min: 1 }).withMessage('At least one skill item is required'),
   body('items.*.label').trim().notEmpty().withMessage('Each item needs a label'),

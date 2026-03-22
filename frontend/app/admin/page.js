@@ -129,15 +129,15 @@ function DashboardOverview({ user, setActive }) {
   }, []);
 
   const cards = [
-    { label: 'Projects',       key: 'projects',       icon: FiCode,      color: 'from-blue-500 to-cyan-500' },
+    { label: 'Profile',        key: 'profile',        icon: FiUser,      color: 'from-gray-500 to-slate-500' },
     { label: 'Experience',     key: 'experience',     icon: FiBriefcase, color: 'from-purple-500 to-pink-500' },
+    { label: 'Projects',       key: 'projects',       icon: FiCode,      color: 'from-blue-500 to-cyan-500' },
     { label: 'Skills',         key: 'skills',         icon: FiGrid,      color: 'from-green-500 to-emerald-500' },
     { label: 'Education',      key: 'education',      icon: FiBook,      color: 'from-yellow-500 to-orange-500' },
     { label: 'Certifications', key: 'certifications', icon: FiAward,     color: 'from-rose-500 to-red-500' },
     { label: 'Volunteering',   key: 'volunteering',   icon: FiHeart,     color: 'from-teal-500 to-cyan-500' },
     { label: 'Messages',       key: 'messages',       icon: FiMail,      color: 'from-indigo-500 to-blue-500' },
-    { label: 'Resume',         key: 'resume',         icon: FiFileText,  color: 'from-amber-500 to-yellow-500' },
-    { label: 'Profile',        key: 'profile',        icon: FiUser,      color: 'from-gray-500 to-slate-500' },
+    { label: 'Upload Resume',  key: 'resume',         icon: FiFileText,  color: 'from-amber-500 to-yellow-500' },
   ];
 
   return (
@@ -172,7 +172,7 @@ function DashboardOverview({ user, setActive }) {
 
       <div className="mt-8 p-4 rounded-xl bg-white/3 border border-white/5">
         <p className="text-xs text-gray-600">
-          Portfolio updates within 60 seconds of any change. Images upload directly to Cloudinary.
+          Changes are live immediately on the portfolio. Images upload directly to Cloudinary.
           Session expires after 30 minutes of inactivity.
         </p>
       </div>
@@ -183,15 +183,15 @@ function DashboardOverview({ user, setActive }) {
 // ── Sidebar ───────────────────────────────────────────────────────────────
 const NAV = [
   { id: 'dashboard',      label: 'Dashboard',      icon: FiHome },
-  { id: 'projects',       label: 'Projects',       icon: FiCode },
+  { id: 'profile',        label: 'Profile',        icon: FiUser },
   { id: 'experience',     label: 'Experience',     icon: FiBriefcase },
+  { id: 'projects',       label: 'Projects',       icon: FiCode },
   { id: 'skills',         label: 'Skills',         icon: FiGrid },
   { id: 'education',      label: 'Education',      icon: FiBook },
   { id: 'certifications', label: 'Certifications', icon: FiAward },
   { id: 'volunteering',   label: 'Volunteering',   icon: FiHeart },
   { id: 'messages',       label: 'Messages',       icon: FiMail },
-  { id: 'resume',         label: 'Resume',         icon: FiFileText },
-  { id: 'profile',        label: 'Profile',        icon: FiUser },
+  { id: 'resume',         label: 'Upload Resume',  icon: FiFileText },
 ];
 
 function SidebarNav({ active, setActive, onLogout, userEmail }) {
@@ -251,13 +251,34 @@ export default function AdminPage() {
       setAuthLoading(false);
     });
 
-    // Sign out when tab/browser is closed — forces fresh login next visit
-    const handleUnload = () => signOut(auth);
-    window.addEventListener('beforeunload', handleUnload);
+    // Sign out on tab/window CLOSE but NOT on refresh.
+    // Strategy: set a sessionStorage flag on beforeunload.
+    // On refresh, the page reloads and sessionStorage persists → flag is set → skip logout.
+    // On tab close, sessionStorage is cleared by the browser → flag never set → logout fires via pagehide.
+
+    // Mark that we're doing a navigation/refresh (not a close)
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem('admin_navigating', '1');
+    };
+
+    // pagehide fires on both close and refresh/navigate
+    // but sessionStorage flag tells us which one it is
+    const handlePageHide = async (e) => {
+      const isRefresh = sessionStorage.getItem('admin_navigating') === '1';
+      if (!isRefresh) {
+        // Tab is being closed — sign out
+        await signOut(auth);
+      }
+      // Always clean the flag
+      sessionStorage.removeItem('admin_navigating');
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
 
     return () => {
-      unsub();
-      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
     };
   }, []);
 
