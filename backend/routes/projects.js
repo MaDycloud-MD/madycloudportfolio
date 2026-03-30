@@ -19,9 +19,9 @@ const projectValidation = [
   body('description').trim().notEmpty().withMessage('Description is required'),
   body('details').optional().isArray(),
   body('techStack').optional().isArray(),
-  body('links.github').optional().isURL().withMessage('Invalid GitHub URL'),
-  body('links.live').optional().isURL().withMessage('Invalid live URL'),
-  body('links.youtube').optional().isURL().withMessage('Invalid YouTube URL'),
+  body('links.github').optional({ checkFalsy: true }).isURL().withMessage('Invalid GitHub URL'),
+  body('links.live').optional({ checkFalsy: true }).isURL().withMessage('Invalid live URL'),
+  body('links.youtube').optional({ checkFalsy: true }).isURL().withMessage('Invalid YouTube URL'),
 ];
 
 // ── GET /api/projects — public ─────────────────────────────────────────────
