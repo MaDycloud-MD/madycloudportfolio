@@ -5,7 +5,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { FiPlus, FiX } from 'react-icons/fi';
 import {
   useAdminCRUD, DataTable, AdminModal, AdminPageHeader,
-  Field, inputCls, textareaCls,
+  Field, inputCls,
 } from '@/components/admin/adminUtils';
 import ImageUploader from '@/components/admin/ImageUploader';
 
@@ -20,10 +20,10 @@ export default function AdminProjects() {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      title: '', description: '', details: [{ value: '' }],
+      title: '', details: [{ value: '' }],
       techStack: [{ name: '', logoUrl: '' }],
       links: { github: '', live: '', youtube: '' },
-      coverImage: '', coverImagePublicId: '', featured: false, order: 0,
+      featured: false, order: 0,
     },
   });
 
@@ -36,10 +36,10 @@ export default function AdminProjects() {
     setEditing(null);
     setSaveErr('');
     reset({
-      title: '', description: '', details: [{ value: '' }],
+      title: '', details: [{ value: '' }],
       techStack: [{ name: '', logoUrl: '' }],
       links: { github: '', live: '', youtube: '' },
-      coverImage: '', coverImagePublicId: '', featured: false, order: 0,
+      featured: false, order: 0,
     });
     setOpen(true);
   };
@@ -60,7 +60,6 @@ export default function AdminProjects() {
     try {
       const payload = {
         title:             data.title,
-        description:       data.description,
         details:           data.details.map(d => d.value).filter(Boolean),
         techStack:         data.techStack.filter(t => t.name && t.logoUrl),
         links: {
@@ -68,8 +67,6 @@ export default function AdminProjects() {
           live:    data.links?.live    || '',
           youtube: data.links?.youtube || '',
         },
-        coverImage:        data.coverImage        || '',
-        coverImagePublicId: data.coverImagePublicId || '',
         featured:          data.featured || false,
         order:             Number(data.order) || 0,
       };
@@ -81,8 +78,6 @@ export default function AdminProjects() {
       setSaveErr(err.message || 'Failed to save. Please try again.');
     }
   };
-
-  const coverUrl = watch('coverImage');
 
   const columns = [
     { key: 'title',     label: 'Title' },
@@ -99,7 +94,6 @@ export default function AdminProjects() {
       <AdminModal open={open} onClose={() => setOpen(false)}
         title={editing ? 'Edit Project' : 'New Project'}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Save error */}
           {saveErr && (
             <div className="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
               {saveErr}
@@ -109,11 +103,6 @@ export default function AdminProjects() {
           <Field label="Title" error={errors.title?.message}>
             <input {...register('title', { required: 'Title is required' })}
               placeholder="Project title" className={inputCls} />
-          </Field>
-
-          <Field label="Description" error={errors.description?.message}>
-            <textarea {...register('description', { required: 'Description is required' })}
-              placeholder="Short description" className={textareaCls} rows={3} />
           </Field>
 
           {/* Bullet details */}
@@ -184,20 +173,6 @@ export default function AdminProjects() {
           <Field label="YouTube URL">
             <input {...register('links.youtube')}
               placeholder="https://youtu.be/…" className={inputCls} />
-          </Field>
-
-          {/* Cover image */}
-          <Field label="Cover Image (optional)">
-            <ImageUploader
-              folder="portfolio/projects"
-              label="Upload Cover"
-              accept="image/*"
-              preview={coverUrl}
-              onUpload={(url, pid) => {
-                setValue('coverImage', url);
-                setValue('coverImagePublicId', pid);
-              }}
-            />
           </Field>
 
           <div className="flex gap-4 items-end">
