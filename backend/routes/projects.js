@@ -1,9 +1,8 @@
 const express = require('express');
-const { body, param, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const router = express.Router();
 const Project = require('../models/Project');
 const { requireAdmin } = require('../middleware/auth');
-const cloudinary = require('../lib/cloudinary');
 
 // ── Validation helpers ────────────────────────────────────────────────────────
 const handleValidation = (req, res) => {
@@ -16,7 +15,6 @@ const handleValidation = (req, res) => {
 
 const projectValidation = [
   body('title').trim().notEmpty().withMessage('Title is required'),
-  body('description').trim().notEmpty().withMessage('Description is required'),
   body('details').optional().isArray(),
   body('techStack').optional().isArray(),
   body('links.github').optional({ checkFalsy: true }).isURL().withMessage('Invalid GitHub URL'),
@@ -51,20 +49,13 @@ router.post('/', requireAdmin, projectValidation, async (req, res) => {
   if (invalid) return;
 
   try {
-    const { title, description, details, techStack, links, coverImage, coverImagePublicId, featured, order } = req.body;
-
-    // Auto-generate slug from title
-    const slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+    const { title, details, techStack, links, featured, order } = req.body;
 
     const project = await Project.create({
-      title, slug, description, details, techStack, links,
-      coverImage, coverImagePublicId, featured, order,
+      title, details, techStack, links, featured, order,
     });
     res.status(201).json({ success: true, data: project });
   } catch (err) {
-    if (err.code === 11000) {
-      return res.status(409).json({ success: false, error: 'A project with this title already exists' });
-    }
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -90,15 +81,8 @@ router.put('/:id', requireAdmin, projectValidation, async (req, res) => {
 // ── DELETE /api/projects/:id — admin ──────────────────────────────────────
 router.delete('/:id', requireAdmin, async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id);
+    const project = await Project.findByIdAndDelete(req.params.id);
     if (!project) return res.status(404).json({ success: false, error: 'Project not found' });
-
-    // Delete cover image from Cloudinary if exists
-    if (project.coverImagePublicId) {
-      await cloudinary.uploader.destroy(project.coverImagePublicId);
-    }
-
-    await Project.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Project deleted successfully' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
