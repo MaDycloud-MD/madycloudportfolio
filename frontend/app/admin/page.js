@@ -79,12 +79,12 @@ function LoginScreen({ onLogin, error, loading }) {
           <div>
             <label className="block text-xs text-gray-400 mb-1.5 font-medium">Email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-              placeholder="admin@example.com" required className={inputCls} />
+              placeholder="Enter Email" required className={inputCls} />
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1.5 font-medium">Password</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••" required className={inputCls} />
+              placeholder="Enter Password" required className={inputCls} />
           </div>
           <button type="submit" disabled={loading}
             className="w-full py-3 mt-2 rounded-lg bg-yellow-400 text-black font-bold
