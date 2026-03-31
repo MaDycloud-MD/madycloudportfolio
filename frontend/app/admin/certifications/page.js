@@ -32,7 +32,7 @@ export default function AdminCertifications() {
     { key: 'logoUrl', label: 'Logo', render: (v) => v ? <img src={v} alt="" className="w-10 h-10 object-contain" /> : '–' },
     { key: 'name',       label: 'Name' },
     { key: 'issuer',     label: 'Issuer' },
-    { key: 'inProgress', label: 'Status', render: v => v ? '🔄 In Progress' : '✅ Completed' },
+    { key: 'inProgress', label: 'Status', render: v => v ? 'In Progress' : 'Completed' },
   ];
 
   return (

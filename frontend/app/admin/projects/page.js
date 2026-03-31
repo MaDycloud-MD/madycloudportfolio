@@ -86,7 +86,7 @@ export default function AdminProjects() {
 
   const columns = [
     { key: 'title',     label: 'Title' },
-    { key: 'featured',  label: 'Featured', render: v => v ? '⭐ Yes' : 'No' },
+    { key: 'featured',  label: 'Featured', render: v => v ? 'Yes' : 'No' },
     { key: 'order',     label: 'Order' },
     { key: 'techStack', label: 'Stack', render: v => `${v?.length || 0} tools` },
   ];

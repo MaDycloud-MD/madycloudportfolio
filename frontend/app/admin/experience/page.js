@@ -40,7 +40,7 @@ export default function AdminExperience() {
     { key: 'role',     label: 'Role' },
     { key: 'company',  label: 'Company' },
     { key: 'duration', label: 'Duration' },
-    { key: 'current',  label: 'Current', render: v => v ? '✅ Yes' : 'No' },
+    { key: 'current',  label: 'Current', render: v => v ? 'Yes' : 'No' },
   ];
 
   return (

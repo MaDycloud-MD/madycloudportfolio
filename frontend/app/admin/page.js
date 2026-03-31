@@ -143,7 +143,7 @@ function DashboardOverview({ user, setActive }) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Welcome back 👋</h1>
+        <h1 className="text-2xl font-bold text-white">Welcome back...</h1>
         <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
       </div>
 
@@ -168,13 +168,6 @@ function DashboardOverview({ user, setActive }) {
             </p>
           </motion.button>
         ))}
-      </div>
-
-      <div className="mt-8 p-4 rounded-xl bg-white/3 border border-white/5">
-        <p className="text-xs text-gray-600">
-          Changes are live immediately on the portfolio. Images upload directly to Cloudinary.
-          Session expires after 30 minutes of inactivity.
-        </p>
       </div>
     </div>
   );

@@ -74,10 +74,10 @@ export default function AdminResume() {
         }),
       });
 
-      setMsg({ type: 'success', text: '✅ Resume uploaded successfully!' });
+      setMsg({ type: 'success', text: 'Resume uploaded successfully!' });
       await fetchResume();
     } catch (err) {
-      setMsg({ type: 'error', text: `❌ ${err.message || 'Upload failed'}` });
+      setMsg({ type: 'error', text: `${err.message || 'Upload failed'}` });
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -91,9 +91,9 @@ export default function AdminResume() {
       const token = await getToken();
       await apiAuth('/api/resume', token, { method: 'DELETE' });
       setResume(null);
-      setMsg({ type: 'success', text: '✅ Resume deleted.' });
+      setMsg({ type: 'success', text: 'Resume deleted.' });
     } catch (err) {
-      setMsg({ type: 'error', text: `❌ ${err.message}` });
+      setMsg({ type: 'error', text: `${err.message}` });
     } finally {
       setDeleting(false);
     }
@@ -160,7 +160,7 @@ export default function AdminResume() {
           {resume ? 'Replace Resume' : 'Upload Resume'}
         </h2>
         <p className="text-xs text-gray-600 mb-4">
-          PDF only. Uploading a new resume will automatically delete the previous one from Cloudinary.
+          PDF only. Uploading a new resume will automatically delete the previous one.
           The download button on your portfolio will instantly point to the new file.
         </p>
 
@@ -184,13 +184,6 @@ export default function AdminResume() {
       </motion.div>
 
       {/* How it works */}
-      <div className="mt-6 p-4 rounded-xl border border-white/5 bg-white/3">
-        <p className="text-xs text-gray-600 leading-relaxed">
-          <strong className="text-gray-400">How it works:</strong> The PDF is uploaded directly from your browser
-          to Cloudinary (no size limit issues). The Cloudinary URL is saved to MongoDB.
-          Your portfolio's "Download Resume" button always fetches the latest URL — no redeployment needed.
-        </p>
-      </div>
     </div>
   );
 }
