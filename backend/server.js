@@ -89,11 +89,11 @@ const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
-    console.log(`📦 MongoDB connected`);
-    console.log(`🌍 CORS allowed for: ${process.env.FRONTEND_URL}`);
+    console.log(`MESSAGE: Server running on port ${PORT}`);
+    console.log(`MESSAGE: MongoDB connected`);
+    console.log(`MESSAGE: CORS allowed for: ${process.env.FRONTEND_URL}`);
   });
 }).catch(err => {
-  console.error('❌ Failed to connect to MongoDB:', err);
+  console.error('WARNING: Failed to connect to MongoDB:', err);
   process.exit(1);
 });

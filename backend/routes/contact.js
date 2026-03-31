@@ -30,10 +30,10 @@ router.post('/', validation, async (req, res) => {
 
     // 2. Send email notification via Resend
     await resend.emails.send({
-      from:    'Portfolio Contact <onboarding@resend.dev>', // use your verified domain later
+      from:    'Portfolio Contact md.shoaib.i.makandar@gmail.com', // chage the email here if u want 
       to:      process.env.ADMIN_EMAIL,
       replyTo: email,
-      subject: `📬 New message from ${name}${subject ? `: ${subject}` : ''}`,
+      subject: `New message from ${name}${subject ? `: ${subject}` : ''}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #0d1117; color: #e6edf3; border-radius: 12px;">
           <h2 style="color: #facc15; margin-top: 0;">New Portfolio Contact</h2>
@@ -46,7 +46,7 @@ router.post('/', validation, async (req, res) => {
             <p style="margin: 0; white-space: pre-wrap;">${message}</p>
           </div>
           <p style="margin-top: 20px; color: #8b949e; font-size: 12px;">
-            Sent from madycloud.me · IP: ${ipAddress}
+            Sent from madycloud.me · IP: ${ipAddress} 
           </p>
         </div>
       `,
