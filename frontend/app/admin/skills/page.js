@@ -1,6 +1,6 @@
 // frontend/app/admin/skills/page.js
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { FiPlus, FiX } from 'react-icons/fi';
 import {
@@ -8,31 +8,43 @@ import {
   Field, inputCls,
 } from '@/components/admin/adminUtils';
 import ImageUploader from '@/components/admin/ImageUploader';
+import { apiFetch } from '@/lib/api'; 
 
-// Suggested categories — admin can also type any custom value
-const SUGGESTED_CATEGORIES = [
-  'Programming', 'DevOps', 'Databases', 'Operating Systems', 'Tools',
-  'Frontend', 'Backend', 'Mobile', 'AI/ML', 'Security', 'Networking',
-];
+// Reduced suggestions list
+const SUGGESTIONS = ['Programming', 'Web Technologies', 'DevOps', 'Tools'];
 
 export default function AdminSkills() {
   const { items, loading, create, update, remove } = useAdminCRUD('/api/skills');
   const [open,        setOpen]        = useState(false);
   const [editing,     setEditing]     = useState(null);
-  const [customCat,   setCustomCat]   = useState(false); // toggle custom input
+  const [customCat,   setCustomCat]   = useState(false);
+  const [dbCategories, setDbCategories] = useState([]);
 
   const { register, handleSubmit, control, reset, setValue, watch,
     formState: { errors, isSubmitting } } = useForm({
     defaultValues: {
-      category: '',
-      customCategory: '',
-      title: '',
-      items: [{ label: '', logoUrl: '', logoPublicId: '' }],
-      order: 0,
+      category: '', customCategory: '', title: '',
+      items: [{ label: '', logoUrl: '', logoPublicId: '' }], order: 0,
     },
   });
 
   const { fields, append, remove: removeItem } = useFieldArray({ control, name: 'items' });
+
+  // Fetch unique categories from backend
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const data = await apiFetch('/api/skills/categories');
+        if (data.success) setDbCategories(data.data || []);
+      } catch (err) {
+        console.error('Failed to fetch categories', err);
+      }
+    }
+    fetchCategories();
+  }, [items]); // Re-fetch if items change
+
+  // Merged suggestions with database categories, removing duplicates
+  const dynamicCategories = [...new Set([...SUGGESTIONS, ...dbCategories])];
 
   const openNew = () => {
     setEditing(null);
@@ -43,8 +55,7 @@ export default function AdminSkills() {
 
   const openEdit = (group) => {
     setEditing(group);
-    // If category not in suggested list, treat as custom
-    const isCustom = !SUGGESTED_CATEGORIES.includes(group.category);
+    const isCustom = !dynamicCategories.includes(group.category);
     setCustomCat(isCustom);
     reset({
       ...group,
@@ -55,7 +66,6 @@ export default function AdminSkills() {
   };
 
   const onSubmit = async (data) => {
-    // Resolve final category value
     const finalCategory = data.category === '__custom__'
       ? data.customCategory.trim()
       : data.category;
@@ -92,26 +102,23 @@ export default function AdminSkills() {
         title={editing ? 'Edit Skill Group' : 'New Skill Group'}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-          {/* Category — dropdown + custom option */}
+          {/* FIXED Category Registration */}
           <Field label="Category" error={errors.category?.message}>
             <select
-              {...register('category', { required: 'Category is required' })}
-              onChange={e => {
-                const val = e.target.value;
-                setCustomCat(val === '__custom__');
-                setValue('category', val);
-              }}
+              {...register('category', {
+                required: 'Category is required',
+                onChange: (e) => setCustomCat(e.target.value === '__custom__')
+              })}
               className={inputCls}
             >
               <option value="">Select a category…</option>
-              {SUGGESTED_CATEGORIES.map(c => (
+              {dynamicCategories.map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
               <option value="__custom__">+ Type a custom category…</option>
             </select>
           </Field>
 
-          {/* Custom category input — shown when "Type custom" is selected */}
           {(customCat || selectedCategory === '__custom__') && (
             <Field label="Custom Category Name" error={errors.customCategory?.message}>
               <input
@@ -132,7 +139,6 @@ export default function AdminSkills() {
               placeholder="e.g. Cloud & DevOps" className={inputCls} />
           </Field>
 
-          {/* Skill items */}
           <Field label="Skills">
             <div className="space-y-3">
               {fields.map((f, i) => (

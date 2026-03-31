@@ -2,10 +2,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const CATEGORIES = ['All', 'Programming', 'DevOps', 'Databases', 'Operating Systems', 'Tools'];
-
 export default function Skills({ data = [] }) {
   const [filter, setFilter] = useState('All');
+
+  // Dynamically extracts unique categories from the backend
+  const dynamicCategories = ['All', ...new Set(data.map(group => group.category))];
 
   const filtered = filter === 'All' ? data : data.filter(g => g.category === filter);
 
@@ -13,9 +14,9 @@ export default function Skills({ data = [] }) {
     <section id="skills" className="py-10 scroll-mt-24">
       <h2 className="text-3xl font-bold mb-6">Skills &amp; Technologies</h2>
 
-      {/* Filter tabs */}
+      {/* Filter tabs using dynamic categories */}
       <div className="flex flex-wrap gap-3 mb-10">
-        {CATEGORIES.map(cat => (
+        {dynamicCategories.map(cat => (
           <button key={cat} onClick={() => setFilter(cat)}
             className={`px-4 py-1 rounded-full text-sm font-medium border transition hover:scale-105
               ${filter === cat
@@ -48,7 +49,6 @@ export default function Skills({ data = [] }) {
                 <div key={idx}
                   className="flex flex-col items-center group hover:scale-110 transition-transform duration-200 relative">
                   <img src={logoUrl} alt={label} className="w-16 h-16 object-contain" />
-                  {/* Tooltip */}
                   <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2
                     opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100
                     transition-all duration-200 bg-gray-900 text-white text-xs px-3 py-1

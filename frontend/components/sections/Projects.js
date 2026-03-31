@@ -40,7 +40,7 @@ export default function Projects({ data = [] }) {
                   className="overflow-hidden"
                 >
                   {/* Bullet details */}
-                  <ul className="mt-5 list-disc pl-5 space-y-1 text-sm text-gray-700 dark:text-gray-300 text-justify">
+                  <ul className="mt-5 list-disc pl-5 space-y-1 text-sm text-gray-700 dark:text-gray-300">
                     {proj.details.map((d, j) => (
                       <li key={j} className="pl-2">{d}</li>
                     ))}
