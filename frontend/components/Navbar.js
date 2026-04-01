@@ -76,7 +76,8 @@ export default function Navbar() {
         </li>
         <li>
           <a href="/admin"
-            className="text-xs text-gray-500 hover:text-primary border border-gray-300 dark:border-gray-600 px-2 py-1 rounded hover:border-primary transition">
+            className="text-xs text-gray-500 hover:text-primary border border-gray-300 dark:border-gray-600 px-2 py-1 rounded hover:border-primary transition" 
+            target='_blank'>
             Admin
           </a>
         </li>
@@ -103,6 +104,13 @@ export default function Navbar() {
                 </button>
               </li>
             ))}
+            <li>
+              <a href="/admin"
+                className="text-xs text-gray-500 hover:text-primary border border-gray-300 dark:border-gray-600 px-2 py-1 rounded hover:border-primary transition" 
+                target='_blank'>
+                Admin
+              </a>
+            </li>
             <li><ResumeButton /></li>
           </ul>
         </div>

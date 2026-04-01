@@ -1,7 +1,13 @@
 // frontend/app/admin/page.js
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  signOut,
+  setPersistence,
+  browserSessionPersistence
+} from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -9,7 +15,7 @@ import dynamic from 'next/dynamic';
 import {
   FiCode, FiBriefcase, FiGrid, FiBook,
   FiAward, FiHeart, FiMail, FiFileText,
-  FiLogOut, FiHome, FiUser,
+  FiLogOut, FiHome, FiUser, FiEye, FiEyeOff
 } from 'react-icons/fi';
 
 // ── Lazy-load each panel ──────────────────────────────────────────────────
@@ -23,7 +29,7 @@ const MessagesPage       = dynamic(() => import('@/app/admin/messages/page'),   
 const ResumePage         = dynamic(() => import('@/app/admin/resume/page'),         { loading: () => <PanelLoader /> });
 const ProfilePage        = dynamic(() => import('@/app/admin/profile/page'),        { loading: () => <PanelLoader /> });
 
-const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+const IDLE_TIMEOUT = 30 * 60 * 1000;
 
 function PanelLoader() {
   return (
@@ -46,8 +52,9 @@ function Spinner({ fullscreen = false }) {
 
 // ── Login screen ──────────────────────────────────────────────────────────
 function LoginScreen({ onLogin, error, loading }) {
-  const [email,    setEmail]    = useState('');
-  const [password, setPassword] = useState('');
+  const [email,        setEmail]        = useState('');
+  const [password,     setPassword]     = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const inputCls = `w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
     text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 transition`;
@@ -75,16 +82,26 @@ function LoginScreen({ onLogin, error, loading }) {
           </div>
         )}
 
-        <form onSubmit={e => { e.preventDefault(); onLogin(email.trim(), password); }} className="space-y-4">
+        <form onSubmit={e => { 
+          e.preventDefault(); 
+          onLogin(email.trim().toLowerCase(), password); 
+        }} className="space-y-4">
           <div>
             <label className="block text-xs text-gray-400 mb-1.5 font-medium">Email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
               placeholder="Enter Email" required className={inputCls} />
           </div>
-          <div>
+          <div className="relative">
             <label className="block text-xs text-gray-400 mb-1.5 font-medium">Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+            <input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
               placeholder="Enter Password" required className={inputCls} />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-[34px] p-1 text-gray-400 hover:text-white transition bg-transparent"
+            >
+              {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+            </button>
           </div>
           <button type="submit" disabled={loading}
             className="w-full py-3 mt-2 rounded-lg bg-yellow-400 text-black font-bold
@@ -238,46 +255,22 @@ export default function AdminPage() {
 
   // ── Session management ────────────────────────────────────────────────
   useEffect(() => {
-    // Firebase auth state listener
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setAuthLoading(false);
-    });
-
-    // Sign out on tab/window CLOSE but NOT on refresh.
-    // Strategy: set a sessionStorage flag on beforeunload.
-    // On refresh, the page reloads and sessionStorage persists → flag is set → skip logout.
-    // On tab close, sessionStorage is cleared by the browser → flag never set → logout fires via pagehide.
-
-    // Mark that we're doing a navigation/refresh (not a close)
-    const handleBeforeUnload = () => {
-      sessionStorage.setItem('admin_navigating', '1');
-    };
-
-    // pagehide fires on both close and refresh/navigate
-    // but sessionStorage flag tells us which one it is
-    const handlePageHide = async (e) => {
-      const isRefresh = sessionStorage.getItem('admin_navigating') === '1';
-      if (!isRefresh) {
-        // Tab is being closed — sign out
-        await signOut(auth);
-      }
-      // Always clean the flag
-      sessionStorage.removeItem('admin_navigating');
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('pagehide', handlePageHide);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('pagehide', handlePageHide);
-    };
+    setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+        return onAuthStateChanged(auth, (u) => {
+          setUser(u);
+          setAuthLoading(false);
+        });
+      })
+      .catch((error) => {
+        console.error("Auth persistence error:", error);
+        setAuthLoading(false);
+      });
   }, []);
 
   // ── Idle timeout — reset on any user activity ─────────────────────────
   useEffect(() => {
-    if (!user) return; // Only run when logged in
+    if (!user) return; 
 
     const resetIdle = () => {
       clearTimeout(idleTimer.current);
@@ -291,7 +284,7 @@ export default function AdminPage() {
 
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
     events.forEach(e => window.addEventListener(e, resetIdle));
-    resetIdle(); // Start the timer immediately on login
+    resetIdle(); 
 
     return () => {
       clearTimeout(idleTimer.current);
@@ -304,7 +297,6 @@ export default function AdminPage() {
     setLoginErr('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged fires → sets user → renders dashboard
     } catch (err) {
       const msgs = {
         'auth/invalid-credential':     'Wrong email or password.',
