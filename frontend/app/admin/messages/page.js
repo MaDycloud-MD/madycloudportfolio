@@ -9,7 +9,7 @@ export default function AdminMessages() {
   const [messages, setMessages] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [selected, setSelected] = useState(null);
-  const { getToken } = useAuth();
+  const { getToken, user } = useAuth();
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -18,13 +18,13 @@ export default function AdminMessages() {
       const data  = await apiAuth('/api/contact', token);
       setMessages(data.data || []);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to fetch messages:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchMessages(); }, []);
+  useEffect(() => { if(user){ fetchMessages(); }}, [user]);
 
   const markRead = async (id) => {
     try {
