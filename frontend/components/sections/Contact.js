@@ -104,10 +104,10 @@ export default function Contact() {
           </button>
 
           {status === 'success' && (
-            <p className="text-green-400 text-sm">✅ Message sent! I'll get back to you soon.</p>
+            <p className="text-green-400 text-sm">MESSAGE: Message sent! I'll get back to you soon.</p>
           )}
           {status === 'error' && (
-            <p className="text-red-400 text-sm">❌ Something went wrong. Please try again.</p>
+            <p className="text-red-400 text-sm">WARNING: Something went wrong. Please try again.</p>
           )}
         </motion.form>
       </div>

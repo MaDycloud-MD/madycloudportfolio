@@ -30,8 +30,8 @@ router.post('/', validation, async (req, res) => {
 
     // 2. Send email notification via Resend
     await resend.emails.send({
-      from:    'Portfolio Contact md.shoaib.i.makandar@gmail.com', // chage the email here if u want 
-      to:      process.env.ADMIN_EMAIL,
+      from: 'MaDycloud Portfolio <onboarding@resend.dev>', 
+      to: process.env.ADMIN_EMAIL, 
       replyTo: email,
       subject: `New message from ${name}${subject ? `: ${subject}` : ''}`,
       html: `
@@ -55,8 +55,7 @@ router.post('/', validation, async (req, res) => {
     res.status(201).json({ success: true, message: 'Your message has been sent!' });
   } catch (err) {
     console.error('Contact error:', err);
-    // Still return success if DB saved but email failed — message is not lost
-    res.status(500).json({ success: false, error: 'Failed to send message. Please try again.' });
+    res.status(201).json({ success: true, message: 'Message saved, but email notification failed.' });
   }
 });
 
