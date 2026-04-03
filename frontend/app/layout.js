@@ -3,8 +3,8 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata = {
   metadataBase: new URL('https://madycloud.me'),
-  title: 'Mohammed Shoaib Makandar (MaDycloud) | DevOps & Cloud Engineer',
-  description: 'Official portfolio of Mohammed Shoaib Makandar (Shoaib M). Explore my DevOps, AWS, Kubernetes, and Cloud Engineering projects at MaDycloud.',
+  title: 'Mohammed Shoaib Makandar (MaDycloud) | Full Stack & DevOps Engineer',
+  description: 'Official portfolio of Mohammed Shoaib Makandar (Shoaib M). Explore my Full Stack, DevOps, AWS, Kubernetes, and Cloud Engineering projects at MaDycloud.',
   keywords: [
     // Identity & Brand
     'Mohammed Shoaib Makandar', 'Mohammed Shoaib M', 'Shoaib Makandar', 
@@ -37,7 +37,7 @@ export const metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Mohammed Shoaib Makandar | DevOps & Cloud Engineer (MaDycloud)',
+    title: 'Mohammed Shoaib Makandar | Full Stack & DevOps Engineer (MaDycloud)',
     description: 'Building reliable cloud systems with AWS, Kubernetes, and modern DevOps tooling.',
     url: 'https://madycloud.me',
     siteName: 'MaDycloud',
@@ -75,7 +75,10 @@ export default function RootLayout({ children }) {
       "Shoaib Makandar",
       "Shoaib M",
       "Shoaib",
-      "MaDycloud"
+      "MaDycloud",
+      "myself.md",
+      "myselfmd07",
+      "myselfmd",
     ],
     "url": "https://madycloud.me",
     "jobTitle": "DevOps & Cloud Engineer",
