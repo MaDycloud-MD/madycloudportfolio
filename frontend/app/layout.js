@@ -57,6 +57,10 @@ export const metadata = {
     creator: '@myselfmd07', // Added X handle
     images: ['/madycloud.png'],
   },
+   icons: {
+    icon: '/madycloud.png',
+    apple: '/madycloud.png',
+  },
 };
 
 export default function RootLayout({ children }) {
