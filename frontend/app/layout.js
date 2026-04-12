@@ -43,7 +43,7 @@ export const metadata = {
     siteName: 'MaDycloud',
     locale: 'en_IN', // Updated to India locale
     images: [{
-      url: '/madycloud1.png',
+      url: '/madycloud.png',
       width: 1200,
       height: 630,
       alt: 'Mohammed Shoaib Makandar - MaDycloud Portfolio',
@@ -55,11 +55,7 @@ export const metadata = {
     title: 'Mohammed Shoaib Makandar | DevOps Engineer',
     description: 'DevOps & Cloud Engineering Portfolio | MaDycloud',
     creator: '@myselfmd07', // Added X handle
-    images: ['/madycloud1.png'],
-  },
-  icons: {
-    icon: '/madycloud1.png',
-    apple: '/madycloud1.png',
+    images: ['/madycloud.png'],
   },
 };
 
