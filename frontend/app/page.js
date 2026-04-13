@@ -58,7 +58,7 @@ export default async function HomePage() {
   <footer className="w-full py-6 mt-10 border-t border-gray-200 dark:border-gray-800">
     <div className="max-w-6xl mx-auto px-6 flex justify-center md:justify-start items-center">
       <p className="text-sm text-gray-500 dark:text-gray-400">
-        Designed, Developed & Owned by <strong>Mohammed Shoaib Makandar</strong> and MaDycloud
+        Designed & Developed by <strong>Mohammed Shoaib Makandar</strong> and MaDycloud
       </p>
     </div>
   </footer>

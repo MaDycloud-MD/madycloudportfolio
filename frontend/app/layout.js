@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 export const metadata = {
   metadataBase: new URL('https://madycloud.me'),
   title: 'Mohammed Shoaib Makandar (MaDycloud) | Full Stack & DevOps Engineer',
-  description: 'Official portfolio of Mohammed Shoaib Makandar (Shoaib M). Explore my Full Stack, DevOps, AWS, Kubernetes, and Cloud Engineering projects at MaDycloud.',
+  description: 'Official portfolio of Mohammed Shoaib Makandar (Mohammed Shoaib M). Explore my Full Stack, DevOps, AWS, Kubernetes, and Cloud Engineering projects at MaDycloud.',
   keywords: [
     'Mohammed Shoaib Makandar', 'Mohammed Shoaib M', 'Shoaib Makandar',
     'Shoaib M', 'Shoaib', 'MaDycloud', 'madycloud.me', 'teammadycloud',
