@@ -77,9 +77,10 @@ export default function RootLayout({ children }) {
     '@type': 'Person',
     'name': 'Mohammed Shoaib Makandar',
     'alternateName': [
-      'Mohammed Shoaib M', 'Mohammed Shoaib. Makandar', 'Shoaib Makandar', 'Shoaib M', 'Shoaib', 
-      'MaDycloud', 'madycloud', 'teammadycloud',
-      'myself.md', 'myselfmd07', 'myselfmd',
+     'Mohammed Shoaib Makandar', 'Mohammed Shoaib M', 'Shoaib Makandar',
+     'Shoaib M', 'Shoaib', 
+     'MaDycloud', 'madycloud.me', 'teammadycloud', 'madycloud', 
+     'myself.md', 'myselfmd07', 'myselfmd',
     ],
     'url':      'https://madycloud.me',
     'image':    'https://madycloud.me/web-app-manifest-512x512.png',
