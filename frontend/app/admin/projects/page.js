@@ -23,7 +23,7 @@ export default function AdminProjects() {
       title: '', details: [{ value: '' }],
       techStack: [{ name: '', logoUrl: '' }],
       links: { github: '', live: '', youtube: '' },
-      featured: false, order: 0,
+      featured: false,
     },
   });
 
@@ -39,7 +39,7 @@ export default function AdminProjects() {
       title: '', details: [{ value: '' }],
       techStack: [{ name: '', logoUrl: '' }],
       links: { github: '', live: '', youtube: '' },
-      featured: false, order: 0,
+      featured: false,
     });
     setOpen(true);
   };
@@ -59,16 +59,17 @@ export default function AdminProjects() {
     setSaveErr('');
     try {
       const payload = {
-        title:             data.title,
-        details:           data.details.map(d => d.value).filter(Boolean),
-        techStack:         data.techStack.filter(t => t.name && t.logoUrl),
+        title:     data.title,
+        details:   data.details.map(d => d.value).filter(Boolean),
+        techStack: data.techStack.filter(t => t.name && t.logoUrl),
         links: {
           github:  data.links?.github  || '',
           live:    data.links?.live    || '',
           youtube: data.links?.youtube || '',
         },
-        featured:          data.featured || false,
-        order:             Number(data.order) || 0,
+        featured: data.featured || false,
+        // order: newest on top — set to negative Date so higher = newer
+        order: editing ? editing.order : -Date.now(),
       };
 
       if (editing) await update(editing._id, payload);
@@ -82,7 +83,6 @@ export default function AdminProjects() {
   const columns = [
     { key: 'title',     label: 'Title' },
     { key: 'featured',  label: 'Featured', render: v => v ? 'Yes' : 'No' },
-    { key: 'order',     label: 'Order' },
     { key: 'techStack', label: 'Stack', render: v => `${v?.length || 0} tools` },
   ];
 
@@ -105,15 +105,19 @@ export default function AdminProjects() {
               placeholder="Project title" className={inputCls} />
           </Field>
 
-          {/* Bullet details */}
+          {/* Bullet details — flexible textarea */}
           <Field label="Details (bullet points)">
             <div className="space-y-2">
               {detailFields.map((f, i) => (
-                <div key={f.id} className="flex gap-2">
-                  <input {...register(`details.${i}.value`)}
-                    placeholder={`Point ${i + 1}`} className={inputCls} />
+                <div key={f.id} className="flex gap-2 items-start">
+                  <textarea
+                    {...register(`details.${i}.value`)}
+                    placeholder={`Point ${i + 1}`}
+                    rows={2}
+                    className={`${inputCls} resize-y`}
+                  />
                   <button type="button" onClick={() => removeDetail(i)}
-                    className="text-gray-500 hover:text-red-400 transition bg-transparent flex-shrink-0">
+                    className="text-gray-500 hover:text-red-400 transition bg-transparent flex-shrink-0 mt-2">
                     <FiX size={15} />
                   </button>
                 </div>
@@ -147,9 +151,7 @@ export default function AdminProjects() {
                       label="Upload"
                       accept="image/*,.svg"
                       preview={watch(`techStack.${i}.logoUrl`)}
-                      onUpload={(url, pid) => {
-                        setValue(`techStack.${i}.logoUrl`, url);
-                      }}
+                      onUpload={(url) => setValue(`techStack.${i}.logoUrl`, url)}
                     />
                   </div>
                 </div>
@@ -163,28 +165,19 @@ export default function AdminProjects() {
 
           {/* Links */}
           <Field label="GitHub URL">
-            <input {...register('links.github')}
-              placeholder="https://github.com/…" className={inputCls} />
+            <input {...register('links.github')} placeholder="https://github.com/…" className={inputCls} />
           </Field>
           <Field label="Live URL">
-            <input {...register('links.live')}
-              placeholder="https://…" className={inputCls} />
+            <input {...register('links.live')} placeholder="https://…" className={inputCls} />
           </Field>
           <Field label="YouTube URL">
-            <input {...register('links.youtube')}
-              placeholder="https://youtu.be/…" className={inputCls} />
+            <input {...register('links.youtube')} placeholder="https://youtu.be/…" className={inputCls} />
           </Field>
 
-          <div className="flex gap-4 items-end">
-            <Field label="Display Order">
-              <input {...register('order', { valueAsNumber: true })}
-                type="number" placeholder="0" className={`${inputCls} w-24`} />
-            </Field>
-            <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer pb-2.5">
-              <input {...register('featured')} type="checkbox" className="accent-yellow-400 w-4 h-4" />
-              Featured
-            </label>
-          </div>
+          <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+            <input {...register('featured')} type="checkbox" className="accent-yellow-400 w-4 h-4" />
+            Featured
+          </label>
 
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={isSubmitting}
