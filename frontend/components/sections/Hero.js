@@ -11,33 +11,34 @@ export default function Hero() {
 
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_URL;
-    // Fetch profile
     fetch(`${base}/api/profile`)
       .then(r => r.json())
       .then(d => { if (d.success) setProfile(d.data); })
       .catch(() => {});
-    // Fetch resume URL
     fetch(`${base}/api/resume`)
       .then(r => r.json())
       .then(d => { if (d.success) setResumeUrl(d.data.url); })
       .catch(() => {});
   }, []);
 
-  // Build TypeAnimation sequence from profile taglines (empty if none)
   const sequence = profile?.taglines?.length
     ? profile.taglines.flatMap(t => [t, 2000])
     : [];
 
   const links = profile?.links || {};
+
+  // Map profile link keys → logo assets
+  // Profile stores 'email', Hero was looking for 'mail' — now fixed to use 'email'
   const socialLinks = [
     { key: 'linkedin',  src: '/logos/linkedin.svg',  alt: 'LinkedIn' },
     { key: 'github',    src: '/logos/github2.svg',   alt: 'GitHub' },
     { key: 'leetcode',  src: '/logos/leetcode.svg',  alt: 'LeetCode' },
     { key: 'twitter',   src: '/logos/twitter.svg',   alt: 'Twitter' },
     { key: 'youtube',   src: '/logos/youtube3.svg',  alt: 'YouTube' },
-    { key: 'mail',      src: '/logos/gmail.svg',       alt: 'Mail'  },
-    { key: 'instagram', src: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg',  alt: 'YouTube' },
-    { key: 'telegram',  src: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',        alt: 'Telegram'  },
+    { key: 'email',     src: '/logos/gmail.svg',     alt: 'Mail',
+      href: (v) => v.startsWith('mailto:') ? v : `mailto:${v}` },
+    { key: 'instagram', src: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg', alt: 'Instagram' },
+    { key: 'telegram',  src: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',       alt: 'Telegram' },
   ].filter(s => links[s.key]);
 
   return (
@@ -78,12 +79,15 @@ export default function Hero() {
         {/* Social links */}
         {socialLinks.length > 0 && (
           <div className="mt-6 flex gap-5 justify-center md:justify-start">
-            {socialLinks.map(({ key, src, alt }) => (
-              <a key={key} href={links[key]} target="_blank" rel="noreferrer"
-                className="hover:scale-110 transition-transform duration-300">
-                <img src={src} alt={alt} className="w-7 h-7" />
-              </a>
-            ))}
+            {socialLinks.map(({ key, src, alt, href }) => {
+              const url = href ? href(links[key]) : links[key];
+              return (
+                <a key={key} href={url} target="_blank" rel="noreferrer"
+                  className="hover:scale-110 transition-transform duration-300">
+                  <img src={src} alt={alt} className="w-7 h-7" />
+                </a>
+              );
+            })}
           </div>
         )}
 
@@ -102,19 +106,19 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Avatar — pushed further right on desktop */}
+      {/* Avatar */}
       {profile?.photoUrl && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
-          className="relative w-44 h-44 sm:w-52 sm:h-52 z-10 flex-shrink-0 md:mr-8 "
+          className="relative w-44 h-44 sm:w-52 sm:h-52 z-10 flex-shrink-0 md:mr-8"
         >
           <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary to-yellow-300 blur-xl opacity-30 animate-pulse" />
           <img
             src={profile.photoUrl}
             alt={profile.name}
-            className="relative z-10 w-full h-full rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-xl "
+            className="relative z-10 w-full h-full rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-xl"
           />
         </motion.div>
       )}

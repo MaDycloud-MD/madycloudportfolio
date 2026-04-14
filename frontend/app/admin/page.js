@@ -128,7 +128,9 @@ function DashboardOverview({ user, setActive }) {
 
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    Promise.allSettled([
+
+    // Fetch public endpoints for counts
+    const publicFetches = Promise.allSettled([
       fetch(`${base}/api/projects`).then(r => r.json()),
       fetch(`${base}/api/experience`).then(r => r.json()),
       fetch(`${base}/api/skills`).then(r => r.json()),
@@ -136,17 +138,34 @@ function DashboardOverview({ user, setActive }) {
       fetch(`${base}/api/certifications`).then(r => r.json()),
       fetch(`${base}/api/volunteering`).then(r => r.json()),
     ]).then(results => {
-      const keys = ['projects','experience','skills','education','certifications','volunteering'];
+      const keys = ['projects', 'experience', 'skills', 'education', 'certifications', 'volunteering'];
       const c = {};
       results.forEach((r, i) => {
-        c[keys[i]] = r.status === 'fulfilled' ? (r.value.data?.length ?? 0) : '–';
+        // skills stores groups — count total skill items across all groups
+        if (keys[i] === 'skills') {
+          const groups = r.status === 'fulfilled' ? (r.value.data || []) : [];
+          c['skills'] = groups.reduce((sum, g) => sum + (g.items?.length || 0), 0);
+        } else {
+          c[keys[i]] = r.status === 'fulfilled' ? (r.value.data?.length ?? 0) : '–';
+        }
       });
-      setCounts(c);
+      return c;
+    });
+
+    // Fetch messages count with auth token
+    const messageFetch = auth.currentUser?.getIdToken().then(token =>
+      fetch(`${base}/api/contact`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(r => r.json()).then(d => d.data?.length ?? 0)
+    ).catch(() => '–');
+
+    Promise.all([publicFetches, messageFetch]).then(([publicCounts, msgCount]) => {
+      setCounts({ ...publicCounts, messages: msgCount });
     }).finally(() => setLoading(false));
   }, []);
 
+  // Removed: Profile, Upload Resume
   const cards = [
-    { label: 'Profile',        key: 'profile',        icon: FiUser,      color: 'from-gray-500 to-slate-500' },
     { label: 'Experience',     key: 'experience',     icon: FiBriefcase, color: 'from-purple-500 to-pink-500' },
     { label: 'Projects',       key: 'projects',       icon: FiCode,      color: 'from-blue-500 to-cyan-500' },
     { label: 'Skills',         key: 'skills',         icon: FiGrid,      color: 'from-green-500 to-emerald-500' },
@@ -154,7 +173,6 @@ function DashboardOverview({ user, setActive }) {
     { label: 'Certifications', key: 'certifications', icon: FiAward,     color: 'from-rose-500 to-red-500' },
     { label: 'Volunteering',   key: 'volunteering',   icon: FiHeart,     color: 'from-teal-500 to-cyan-500' },
     { label: 'Messages',       key: 'messages',       icon: FiMail,      color: 'from-indigo-500 to-blue-500' },
-    { label: 'Upload Resume',  key: 'resume',         icon: FiFileText,  color: 'from-amber-500 to-yellow-500' },
   ];
 
   return (
@@ -181,7 +199,7 @@ function DashboardOverview({ user, setActive }) {
             <p className="text-2xl font-bold text-white mt-1">
               {loading
                 ? <span className="w-8 h-6 block rounded bg-white/10 animate-pulse mt-1" />
-                : counts[key] ?? 0}
+                : (counts[key] ?? 0)}
             </p>
           </motion.button>
         ))}
@@ -253,7 +271,6 @@ export default function AdminPage() {
   const [active,      setActive]      = useState('dashboard');
   const idleTimer                     = useRef(null);
 
-  // ── Session management ────────────────────────────────────────────────
   useEffect(() => {
     setPersistence(auth, browserSessionPersistence)
       .then(() => {
@@ -262,16 +279,11 @@ export default function AdminPage() {
           setAuthLoading(false);
         });
       })
-      .catch((error) => {
-        console.error("Auth persistence error:", error);
-        setAuthLoading(false);
-      });
+      .catch(() => setAuthLoading(false));
   }, []);
 
-  // ── Idle timeout — reset on any user activity ─────────────────────────
   useEffect(() => {
-    if (!user) return; 
-
+    if (!user) return;
     const resetIdle = () => {
       clearTimeout(idleTimer.current);
       idleTimer.current = setTimeout(async () => {
@@ -281,11 +293,9 @@ export default function AdminPage() {
         alert('Session expired due to inactivity. Please log in again.');
       }, IDLE_TIMEOUT);
     };
-
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
     events.forEach(e => window.addEventListener(e, resetIdle));
-    resetIdle(); 
-
+    resetIdle();
     return () => {
       clearTimeout(idleTimer.current);
       events.forEach(e => window.removeEventListener(e, resetIdle));

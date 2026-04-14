@@ -1,3 +1,4 @@
+// frontend/app/admin/resume/page.js
 'use client';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -41,7 +42,6 @@ export default function AdminResume() {
     try {
       const token = await getToken();
 
-      // 1. Get signed upload credentials
       const sigRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/sign`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -49,7 +49,6 @@ export default function AdminResume() {
       });
       const { signature, timestamp, cloudName, apiKey, folder } = await sigRes.json();
 
-      // 2. Upload directly to Cloudinary
       const form = new FormData();
       form.append('file',      file);
       form.append('signature', signature);
@@ -64,12 +63,14 @@ export default function AdminResume() {
       if (!uploadRes.ok) throw new Error('Cloudinary upload failed');
       const data = await uploadRes.json();
 
-      // 3. Save URL to our DB (this also deletes the old resume)
+      // Force the URL to use fl_attachment:false so it opens inline in browser
+      const viewableUrl = data.secure_url.replace('/upload/', '/upload/fl_attachment:false/');
+
       await apiAuth('/api/resume', token, {
         method: 'POST',
         body:   JSON.stringify({
           cloudinaryPublicId: data.public_id,
-          url:                data.secure_url,
+          url:                viewableUrl,
           filename:           file.name,
         }),
       });
@@ -99,11 +100,15 @@ export default function AdminResume() {
     }
   };
 
+  // Open PDF in a new tab — Cloudinary raw files need direct URL access
+  const handleView = () => {
+    if (resume?.url) window.open(resume.url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="max-w-2xl">
       <h1 className="text-xl font-bold text-white mb-6">Resume Management</h1>
 
-      {/* Current resume card */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -127,14 +132,19 @@ export default function AdminResume() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <a href={resume.url} target="_blank" rel="noreferrer"
-                className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition"
-                title="Preview">
+              <button
+                onClick={handleView}
+                className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition bg-transparent"
+                title="Preview PDF"
+              >
                 <FiExternalLink size={16} />
-              </a>
-              <a href={resume.url} download
+              </button>
+              <a
+                href={resume.url}
+                download={resume.filename}
                 className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-400/10 rounded-lg transition"
-                title="Download">
+                title="Download"
+              >
                 <FiDownload size={16} />
               </a>
               <button onClick={handleDelete} disabled={deleting}
@@ -149,7 +159,6 @@ export default function AdminResume() {
         )}
       </motion.div>
 
-      {/* Upload new */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -161,7 +170,6 @@ export default function AdminResume() {
         </h2>
         <p className="text-xs text-gray-600 mb-4">
           PDF only. Uploading a new resume will automatically delete the previous one.
-          The download button on your portfolio will instantly point to the new file.
         </p>
 
         <label className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border text-sm font-medium
@@ -182,8 +190,6 @@ export default function AdminResume() {
           </p>
         )}
       </motion.div>
-
-      {/* How it works */}
     </div>
   );
 }

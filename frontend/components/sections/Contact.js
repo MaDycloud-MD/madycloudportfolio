@@ -1,14 +1,35 @@
+// frontend/components/sections/Contact.js
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
+// Map profile link keys to display metadata
+const SOCIAL_META = {
+  linkedin:  { src: '/logos/linkedin.svg',  label: 'LinkedIn' },
+  github:    { src: '/logos/github2.svg',   label: 'GitHub' },
+  instagram: { src: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg', label: 'Instagram' },
+  telegram:  { src: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',       label: 'Telegram' },
+  email:     { src: '/logos/gmail.svg',     label: 'Mail',    isEmail: true },
+  twitter:   { src: '/logos/twitter.svg',   label: 'Twitter' },
+  youtube:   { src: '/logos/youtube3.svg',  label: 'YouTube' },
+  leetcode:  { src: '/logos/leetcode.svg',  label: 'LeetCode' },
+};
+
 export default function Contact() {
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
-  const [loading, setLoading] = useState(false);
+  const [status,   setStatus]   = useState(null);
+  const [loading,  setLoading]  = useState(false);
+  const [profile,  setProfile]  = useState(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/profile`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setProfile(d.data); })
+      .catch(() => {});
+  }, []);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -33,6 +54,18 @@ export default function Contact() {
     rounded-lg px-4 py-3 text-sm text-gray-900 dark:text-gray-100
     focus:outline-none focus:ring-2 focus:ring-primary transition`;
 
+  const links = profile?.links || {};
+
+  // Build social links from profile, only show ones with values
+  const socialLinks = Object.entries(SOCIAL_META)
+    .filter(([key]) => links[key])
+    .map(([key, meta]) => ({
+      ...meta,
+      href: meta.isEmail
+        ? (links[key].startsWith('mailto:') ? links[key] : `mailto:${links[key]}`)
+        : links[key],
+    }));
+
   return (
     <section id="contact" className="py-20 scroll-mt-20">
       <h2 className="text-3xl font-bold mb-6">Contact</h2>
@@ -44,26 +77,25 @@ export default function Contact() {
           Have an opportunity, project, collaboration idea, or just want to connect?
         </p>
 
-        {/* Social links */}
-        <div className="flex items-center justify-center gap-6 text-xs flex-wrap">
-          {[
-            { href: 'https://www.linkedin.com/in/myselfmd',     src: '/logos/linkedin.svg',   label: 'LinkedIn'  },
-            { href: 'https://www.instagram.com/myself.md',      src: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg', label: 'Instagram' },
-            { href: 'https://t.me/myselfmd07',                  src: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',       label: 'Telegram'  },
-            { href: 'mailto:md.shoaib.i.makandar@gmail.com',    src: '/logos/gmail.svg',       label: 'Mail'      },
-          ].map(({ href, src, label }) => (
-            <a key={label} href={href} target="_blank" rel="noreferrer"
-              className="flex flex-col items-center hover:scale-110 transition-transform duration-300">
-              <img src={src} alt={label} className="w-7 h-7" />
-              <span className="mt-1.5">{label}</span>
-            </a>
-          ))}
-        </div>
+        {/* Dynamic social links from profile */}
+        {socialLinks.length > 0 && (
+          <div className="flex items-center justify-center gap-6 text-xs flex-wrap">
+            {socialLinks.map(({ href, src, label }) => (
+              <a key={label} href={href} target="_blank" rel="noreferrer"
+                className="flex flex-col items-center hover:scale-110 transition-transform duration-300">
+                <img src={src} alt={label} className="w-7 h-7" />
+                <span className="mt-1.5">{label}</span>
+              </a>
+            ))}
+          </div>
+        )}
 
-        <div className="flex items-center justify-center gap-2 text-gray-800 dark:text-gray-200 text-sm">
-          <FaMapMarkerAlt className="text-primary" />
-          <span><strong>Location:</strong> Belagavi, Karnataka, India.</span>
-        </div>
+        {profile?.location && (
+          <div className="flex items-center justify-center gap-2 text-gray-800 dark:text-gray-200 text-sm">
+            <FaMapMarkerAlt className="text-primary" />
+            <span><strong>Location:</strong> {profile.location}</span>
+          </div>
+        )}
 
         {/* Contact form */}
         <motion.form
@@ -88,8 +120,7 @@ export default function Contact() {
             </div>
           </div>
 
-          <input {...register('subject')}
-            placeholder="Subject (optional)" className={inputCls} />
+          <input {...register('subject')} placeholder="Subject (optional)" className={inputCls} />
 
           <div>
             <textarea {...register('message', { required: 'Message is required', minLength: { value: 10, message: 'Min 10 characters' } })}
@@ -104,10 +135,10 @@ export default function Contact() {
           </button>
 
           {status === 'success' && (
-            <p className="text-green-400 text-sm">MESSAGE: Message sent! I'll get back to you soon.</p>
+            <p className="text-green-400 text-sm">Message sent! I'll get back to you soon.</p>
           )}
           {status === 'error' && (
-            <p className="text-red-400 text-sm">WARNING: Something went wrong. Please try again.</p>
+            <p className="text-red-400 text-sm">Something went wrong. Please try again.</p>
           )}
         </motion.form>
       </div>
