@@ -11,8 +11,8 @@ const SOCIAL_META = {
   github:    { src: '/logos/github2.svg',   label: 'GitHub' },
   instagram: { src: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg', label: 'Instagram' },
   telegram:  { src: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',       label: 'Telegram' },
-  email:     { src: '/logos/gmail.svg',     label: 'Mail',    isEmail: true },
-  twitter:   { src: '/logos/twitter.svg',   label: 'Twitter' },
+  email:     { src: '/logos/gmail.svg',     label: 'Email',    isEmail: true },
+  twitter:   { src: '/logos/x1.jpeg',   label: 'Twitter/X' },
   youtube:   { src: '/logos/youtube3.svg',  label: 'YouTube' },
   leetcode:  { src: '/logos/leetcode.svg',  label: 'LeetCode' },
 };

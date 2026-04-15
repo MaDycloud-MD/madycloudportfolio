@@ -33,7 +33,7 @@ export default function Hero() {
     { key: 'linkedin',  src: '/logos/linkedin.svg',  alt: 'LinkedIn' },
     { key: 'github',    src: '/logos/github2.svg',   alt: 'GitHub' },
     { key: 'leetcode',  src: '/logos/leetcode.svg',  alt: 'LeetCode' },
-    { key: 'twitter',   src: '/logos/twitter.svg',   alt: 'Twitter' },
+    { key: 'twitter',   src: '/logos/x1.jpeg',   alt: 'Twitter/X' },
     { key: 'youtube',   src: '/logos/youtube3.svg',  alt: 'YouTube' },
     { key: 'email',     src: '/logos/gmail.svg',     alt: 'Mail',
       href: (v) => v.startsWith('mailto:') ? v : `mailto:${v}` },
