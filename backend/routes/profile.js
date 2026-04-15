@@ -31,11 +31,16 @@ router.put('/', requireAdmin, async (req, res) => {
     if (bio       !== undefined) profile.bio       = bio;
     if (location  !== undefined) profile.location  = location;
     if (techStack !== undefined) profile.techStack = techStack;
-    if (links     !== undefined) profile.links     = { ...profile.links.toObject(), ...links };
+
+    if (links !== undefined) {  
+      profile.links = links;  
+      profile.markModified('links');
+    }
 
     await profile.save();
     res.json({ success: true, data: profile });
   } catch (err) {
+    console.error("Save Error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

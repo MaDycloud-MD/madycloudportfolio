@@ -64,13 +64,13 @@ export default function AdminProfile() {
     setSaving(true);
     setMsg({ type: '', text: '' });
     try {
-      const links = {};
+      const socialLinks = {};
       LINK_FIELDS.forEach(({ key }) => {
-        links[key] = data[`links.${key}`] || '';
+        socialLinks[key] = data.links?.[key] || ""; 
       });
       await apiAuthReq('/api/profile', {
         method: 'PUT',
-        body:   JSON.stringify({ name: data.name, bio: data.bio, techStack: data.techStack, location: data.location, taglines, links }),
+        body:   JSON.stringify({ name: data.name, bio: data.bio, techStack: data.techStack, location: data.location, taglines, links: socialLinks }),
       });
       setMsg({ type: 'success', text: 'Profile updated successfully!' });
       setSaved(true);

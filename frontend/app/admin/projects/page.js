@@ -171,7 +171,7 @@ export default function AdminProjects() {
             <input {...register('links.live')} placeholder="https://…" className={inputCls} />
           </Field>
           <Field label="YouTube URL">
-            <input {...register('links.youtube')} placeholder="https://youtu.be/…" className={inputCls} />
+            <input {...register('links.youtube')} placeholder="https://youtube.com/…" className={inputCls} />
           </Field>
 
           <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
