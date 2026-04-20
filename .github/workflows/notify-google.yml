@@ -1,0 +1,15 @@
+# .github/workflows/notify-google.yml
+name: Notify Google Indexing API
+
+on:
+  deployment_status:
+
+jobs:
+  notify:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Google Indexing API route
+        run: |
+          curl -X POST https://madycloud.me/api/google-index \
+            -H "Authorization: Bearer ${{ secrets.INDEXING_WEBHOOK_SECRET }}"
