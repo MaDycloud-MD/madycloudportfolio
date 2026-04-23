@@ -6,12 +6,6 @@ import { apiAuth, apiFetch } from '@/lib/api';
 import { motion } from 'framer-motion';
 import { FiFileText, FiUpload, FiTrash2, FiDownload, FiExternalLink } from 'react-icons/fi';
 
-function buildDownloadUrl(url, filename) {
-  if (!url) return url;
-  const encoded = encodeURIComponent(filename).replace(/%2E/gi, '.');
-  return url.replace('/upload/', `/upload/fl_attachment:${encoded}/`);
-}
-
 export default function AdminResume() {
   const [resume,    setResume]    = useState(null);
   const [loading,   setLoading]   = useState(true);
@@ -51,9 +45,13 @@ export default function AdminResume() {
       const sigRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/sign`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body:    JSON.stringify({ folder: 'portfolio/resume', resourceType: 'raw' }),
+        body:    JSON.stringify({
+          folder:       'portfolio/resume',
+          filename:     file.name,      
+          resourceType: 'raw',  
+        }),
       });
-      const { signature, timestamp, cloudName, apiKey, folder } = await sigRes.json();
+      const { signature, timestamp, cloudName, apiKey, folder, resourceType } = await sigRes.json();
 
       const form = new FormData();
       form.append('file',      file);
@@ -63,7 +61,7 @@ export default function AdminResume() {
       form.append('folder',    folder);
 
       const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`,
+        `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
         { method: 'POST', body: form }
       );
       if (!uploadRes.ok) throw new Error('Cloudinary upload failed');
@@ -73,7 +71,7 @@ export default function AdminResume() {
         method: 'POST',
         body:   JSON.stringify({
           cloudinaryPublicId: data.public_id,
-          url:                data.secure_url,  
+          url:                data.secure_url,
           filename:           file.name,
         }),
       });
@@ -141,8 +139,9 @@ export default function AdminResume() {
               >
                 <FiExternalLink size={16} />
               </button>
+
               <a
-                href={buildDownloadUrl(resume.url, resume.filename)}
+                href="/api/download-resume"
                 download={resume.filename}
                 className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-400/10 rounded-lg transition"
                 title="Download"
