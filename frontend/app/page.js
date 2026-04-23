@@ -40,28 +40,28 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col font-inter bg-light dark:bg-dark text-gray-900 dark:text-gray-100 transition-colors duration-300">
-  <Navbar />
+      <Navbar />
 
-  {/* Main Content Area */}
-  <main className="flex-grow max-w-6xl mx-auto px-6 w-full">
-    <Hero />
-    <Experience     data={experience} />
-    <Projects       data={projects} />
-    <Skills         data={skills} />
-    <Education      data={education} />
-    <Certifications data={certifications} />
-    <Volunteering   data={volunteering} />
-    <Contact />
-  </main>
+      {/* Main Content Area */}
+      <main className="flex-grow max-w-6xl mx-auto px-6 w-full">
+        <Hero />
+        <Experience     data={experience} />
+        <Projects       data={projects} />
+        <Skills         data={skills} />
+        <Education      data={education} />
+        <Certifications data={certifications} />
+        <Volunteering   data={volunteering} />
+        <Contact />
+      </main>
 
-  {/* Footer Area */}
-  <footer className="w-full py-6 mt-10 border-t border-gray-200 dark:border-gray-800">
-    <div className="max-w-6xl mx-auto px-6 flex justify-center md:justify-start items-center">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Designed & Developed by <strong>Mohammed Shoaib Makandar</strong> and MaDycloud
-      </p>
+      {/* Footer Area */}
+      <footer className="w-full py-6 mt-10 border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-6xl mx-auto px-6 flex justify-center md:justify-start items-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Designed & Developed by <strong>Mohammed Shoaib Makandar</strong> and MaDycloud
+          </p>
+        </div>
+      </footer>
     </div>
-  </footer>
-</div>
   );
 }

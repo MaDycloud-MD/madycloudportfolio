@@ -6,6 +6,12 @@ import { apiAuth, apiFetch } from '@/lib/api';
 import { motion } from 'framer-motion';
 import { FiFileText, FiUpload, FiTrash2, FiDownload, FiExternalLink } from 'react-icons/fi';
 
+function buildDownloadUrl(url, filename) {
+  if (!url) return url;
+  const encoded = encodeURIComponent(filename).replace(/%2E/gi, '.');
+  return url.replace('/upload/', `/upload/fl_attachment:${encoded}/`);
+}
+
 export default function AdminResume() {
   const [resume,    setResume]    = useState(null);
   const [loading,   setLoading]   = useState(true);
@@ -63,14 +69,11 @@ export default function AdminResume() {
       if (!uploadRes.ok) throw new Error('Cloudinary upload failed');
       const data = await uploadRes.json();
 
-      // Force the URL to use fl_attachment:false so it opens inline in browser
-      const viewableUrl = data.secure_url.replace('/upload/', '/upload/fl_attachment:false/');
-
       await apiAuth('/api/resume', token, {
         method: 'POST',
         body:   JSON.stringify({
           cloudinaryPublicId: data.public_id,
-          url:                viewableUrl,
+          url:                data.secure_url,  
           filename:           file.name,
         }),
       });
@@ -100,7 +103,6 @@ export default function AdminResume() {
     }
   };
 
-  // Open PDF in a new tab — Cloudinary raw files need direct URL access
   const handleView = () => {
     if (resume?.url) window.open(resume.url, '_blank', 'noopener,noreferrer');
   };
@@ -140,7 +142,7 @@ export default function AdminResume() {
                 <FiExternalLink size={16} />
               </button>
               <a
-                href={resume.url}
+                href={buildDownloadUrl(resume.url, resume.filename)}
                 download={resume.filename}
                 className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-400/10 rounded-lg transition"
                 title="Download"

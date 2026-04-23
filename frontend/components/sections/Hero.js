@@ -6,8 +6,8 @@ import { TypeAnimation } from 'react-type-animation';
 import { motion } from 'framer-motion';
 
 export default function Hero() {
-  const [profile, setProfile] = useState(null);
-  const [resumeUrl, setResumeUrl] = useState('');
+  const [profile,   setProfile]   = useState(null);
+  const [hasResume, setHasResume] = useState(false);
 
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_URL;
@@ -17,7 +17,7 @@ export default function Hero() {
       .catch(() => {});
     fetch(`${base}/api/resume`)
       .then(r => r.json())
-      .then(d => { if (d.success) setResumeUrl(d.data.url); })
+      .then(d => { if (d.success && d.data?.url) setHasResume(true); })
       .catch(() => {});
   }, []);
 
@@ -27,13 +27,11 @@ export default function Hero() {
 
   const links = profile?.links || {};
 
-  // Map profile link keys → logo assets
-  // Profile stores 'email', Hero was looking for 'mail' — now fixed to use 'email'
   const socialLinks = [
     { key: 'linkedin',  src: '/logos/linkedin.svg',  alt: 'LinkedIn' },
     { key: 'github',    src: '/logos/github2.svg',   alt: 'GitHub' },
     { key: 'leetcode',  src: '/logos/leetcode.svg',  alt: 'LeetCode' },
-    { key: 'twitter',   src: '/logos/x1.jpeg',   alt: 'Twitter/X' },
+    { key: 'twitter',   src: '/logos/x1.jpeg',       alt: 'Twitter/X' },
     { key: 'youtube',   src: '/logos/youtube3.svg',  alt: 'YouTube' },
     { key: 'email',     src: '/logos/gmail.svg',     alt: 'Mail',
       href: (v) => v.startsWith('mailto:') ? v : `mailto:${v}` },
@@ -91,9 +89,12 @@ export default function Hero() {
           </div>
         )}
 
-        {resumeUrl && (
-          <a href={resumeUrl} target="_blank" rel="noreferrer"
-            className="inline-block mt-6 px-6 py-2 rounded-full bg-primary text-black font-semibold hover:bg-yellow-400 transition">
+        {hasResume && (
+          <a
+            href="/api/download-resume"
+            download
+            className="inline-block mt-6 px-6 py-2 rounded-full bg-primary text-black font-semibold hover:bg-yellow-400 transition"
+          >
             Download Resume
           </a>
         )}
