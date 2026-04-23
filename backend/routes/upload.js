@@ -4,19 +4,12 @@ const router  = express.Router();
 const cloudinary = require('../lib/cloudinary');
 const { requireAdmin } = require('../middleware/auth');
 
-/**
- * POST /api/upload/sign
- * Returns signed Cloudinary upload credentials.
- * SVGs are uploaded as resource_type: 'raw' — Cloudinary doesn't process them as images.
- * Body: { folder?: string, filename?: string }
- */
 router.post('/sign', requireAdmin, (req, res) => {
   try {
-    const { folder = 'portfolio', filename = '' } = req.body;
+    const { folder = 'portfolio', filename = '', resourceType: bodyResourceType } = req.body;
 
-    // Detect SVG by filename extension — must use raw resource_type
     const isSvg        = filename.toLowerCase().endsWith('.svg');
-    const resourceType = isSvg ? 'raw' : 'image';
+    const resourceType = bodyResourceType || (isSvg ? 'raw' : 'image');
 
     const timestamp    = Math.round(Date.now() / 1000);
     const paramsToSign = { timestamp, folder };
@@ -33,18 +26,13 @@ router.post('/sign', requireAdmin, (req, res) => {
       cloudName:    process.env.CLOUDINARY_CLOUD_NAME,
       apiKey:       process.env.CLOUDINARY_API_KEY,
       folder,
-      resourceType, // 'raw' for SVG, 'image' for everything else
+      resourceType,
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-/**
- * DELETE /api/upload
- * Destroy a Cloudinary asset by publicId.
- * Body: { publicId: string, resourceType?: 'image' | 'raw' | 'video' }
- */
 router.delete('/', requireAdmin, async (req, res) => {
   const { publicId, resourceType = 'image' } = req.body;
   if (!publicId) {

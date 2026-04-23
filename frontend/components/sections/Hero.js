@@ -15,6 +15,7 @@ export default function Hero() {
       .then(r => r.json())
       .then(d => { if (d.success) setProfile(d.data); })
       .catch(() => {});
+    // Only need to know a resume exists — the proxy handles the actual file
     fetch(`${base}/api/resume`)
       .then(r => r.json())
       .then(d => { if (d.success && d.data?.url) setHasResume(true); })
