@@ -14,27 +14,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/signed-url', async (req, res) => {
-  try {
-    const resume = await Resume.findOne({}).sort({ uploadedAt: -1 });
-    if (!resume) return res.status(404).json({ success: false, error: 'No resume uploaded yet' });
-
-    const signedUrl = cloudinary.utils.private_download_url(
-      resume.cloudinaryPublicId,
-      'pdf',
-      {
-        resource_type: 'raw',
-        expires_at:    Math.floor(Date.now() / 1000) + 60,
-        attachment:    true,
-      }
-    );
-
-    res.json({ success: true, data: { signedUrl, filename: resume.filename } });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 router.post('/', requireAdmin, async (req, res) => {
   const { cloudinaryPublicId, url, filename } = req.body;
   if (!cloudinaryPublicId || !url || !filename) {

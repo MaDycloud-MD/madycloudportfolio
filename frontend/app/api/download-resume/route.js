@@ -4,18 +4,18 @@ export async function GET() {
   try {
     const base = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL;
 
-    const apiRes = await fetch(`${base}/api/resume/signed-url`, { cache: 'no-store' });
+    const apiRes = await fetch(`${base}/api/resume`, { cache: 'no-store' });
     const json = await apiRes.json();
 
-    if (!json.success || !json.data?.signedUrl) {
+    if (!json.success || !json.data?.url) {
       return NextResponse.json({ error: 'No resume available' }, { status: 404 });
     }
 
-    const { signedUrl, filename } = json.data;
+    const { url, filename } = json.data;
 
-    const pdfRes = await fetch(signedUrl);
+    const pdfRes = await fetch(url, { cache: 'no-store' });
     if (!pdfRes.ok) {
-      return NextResponse.json({ error: 'Failed to fetch resume' }, { status: 502 });
+      return NextResponse.json({ error: `Failed to fetch resume: ${pdfRes.status}` }, { status: 502 });
     }
 
     const pdfBuffer = await pdfRes.arrayBuffer();
