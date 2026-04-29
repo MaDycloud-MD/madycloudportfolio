@@ -64,7 +64,7 @@ export const metadata = {
   // ── OpenGraph ─────────────────────────────────────────────────────────────────
   openGraph: {
     title:       'Mohammed Shoaib Makandar | Full Stack & DevOps Engineer',
-    description: 'Building reliable cloud systems with MERN, AWS, Kubernetes, and modern DevOps tooling. Portfolio by MaDycloud.',
+    description: 'Official portfolio of Mohammed Shoaib Makandar (MaDycloud) — Full Stack & DevOps Engineer specialising in AWS, Kubernetes, Docker, Terraform, CI/CD, React.js, Next.js, Node.js, and Java. Based in Belagavi, Karnataka.',
     url:         'https://madycloud.me',
     siteName:    'MaDycloud',
     locale:      'en_IN',
